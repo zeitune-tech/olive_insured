@@ -1,0 +1,58 @@
+server:
+    port: 8050
+    servlet:
+        context-path: /api/v1/
+
+spring:
+    application:
+        name: olive_insurance_insured_service
+    datasource:
+        url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5436/olive_insured}
+        username: ${SPRING_DATASOURCE_USERNAME:lhacksrt}
+        password: ${SPRING_DATASOURCE_PASSWORD:lhacksrt}
+
+    jpa:
+        hibernate:
+            ddl-auto: update
+        show-sql: false
+        properties:
+            hibernate:
+                format_sql: true
+                dialect: org.hibernate.dialect.PostgreSQLDialect
+
+    cloud:
+        consul:
+            host: ${SPRING_CLOUD_CONSUL_HOST:localhost}
+            port: ${SPRING_CLOUD_CONSUL_PORT:8500}
+            discovery:
+                register: ${SPRING_CLOUD_CONSUL_DISCOVERY_REGISTER:true}
+                deregister: ${SPRING_CLOUD_CONSUL_DISCOVERY_DEREGISTER:true}
+                health-check-path: ${SPRING_CLOUD_CONSUL_DISCOVERY_HEALTHCHECKPATH:/api/v1/actuator/health}
+                prefer-ip-address: ${SPRING_CLOUD_CONSUL_DISCOVERY_PREFER_IP_ADDRESS:true}
+management:
+    endpoints:
+        web:
+            exposure:
+                include: health,info
+
+logging:
+    level:
+        org.springframework.orm.jpa: DEBUG
+        org.springframework.security: DEBUG
+        sn.lhacksrt.mpssarl: DEBUG
+
+services:
+    olive-insurance-auth-service:
+        base-url: http://localhost:8010/api/v1/
+    olive-insurance-administration-service:
+        base-url: http://localhost:8020/api/v1/
+
+
+jwt:
+    user:
+        public-key: classpath:keys/public-user.pem
+        expiration: 900000 # 15 min
+
+    admin:
+        public-key: classpath:keys/public-admin.pem
+        expiration: 300000 # 5 min604800000}

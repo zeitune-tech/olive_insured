@@ -3,50 +3,57 @@ package sn.zeitune.oliveinsuranceinsured.app.controllers;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import sn.zeitune.oliveinsuranceinsured.app.dtos.requests.InsuredRequest;
+import sn.zeitune.oliveinsuranceinsured.app.dtos.requests.InsuredCreateRequest;
+import sn.zeitune.oliveinsuranceinsured.app.dtos.requests.InsuredUpdateRequest;
 import sn.zeitune.oliveinsuranceinsured.app.dtos.responses.InsuredResponse;
 import sn.zeitune.oliveinsuranceinsured.app.services.InsuredService;
-import sn.zeitune.oliveinsuranceinsured.security.Employee;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/app/insureds")
+@RequestMapping("/app/insured")
 @RequiredArgsConstructor
 public class InsuredController {
 
-    private final InsuredService insuredService;
+    private final InsuredService service;
 
     @PostMapping
-    public ResponseEntity<InsuredResponse> create(
-            @RequestBody @Valid InsuredRequest request,
-            Authentication authentication
-    ) {
-        Employee employee = (Employee) authentication.getPrincipal();
-        InsuredResponse response = insuredService.create(request, employee.getManagementEntity());
-        return ResponseEntity.ok(response);
+    public ResponseEntity<InsuredResponse> create(@Valid @RequestBody InsuredCreateRequest req) {
+        return ResponseEntity.ok(service.create(req));
     }
 
     @GetMapping("/{uuid}")
-    public ResponseEntity<InsuredResponse> getByUuid(@PathVariable UUID uuid) {
-        InsuredResponse response = insuredService.getByUuid(uuid);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<InsuredResponse> get(@PathVariable UUID uuid) {
+        return ResponseEntity.ok(service.get(uuid));
     }
 
     @GetMapping
-    public ResponseEntity<List<InsuredResponse>> getAll(Authentication authentication) {
-        Employee employee = (Employee) authentication.getPrincipal();
-        List<InsuredResponse> responses = insuredService.getAll(employee.getManagementEntity());
-        return ResponseEntity.ok(responses);
+    public ResponseEntity<Page<InsuredResponse>> search(
+            @RequestParam(name = "query", required = false) String query,
+            Pageable pageable) {
+        return ResponseEntity.ok(service.search(query, pageable));
+    }
+
+    @PutMapping("/{uuid}")
+    public ResponseEntity<InsuredResponse> update(@PathVariable UUID uuid,
+                                                              @Valid @RequestBody InsuredUpdateRequest req) {
+        return ResponseEntity.ok(service.update(uuid, req));
+    }
+
+    @PatchMapping("/{uuid}")
+    public ResponseEntity<InsuredResponse> patch(@PathVariable UUID uuid,
+                                                 @RequestBody InsuredUpdateRequest req) {
+        return ResponseEntity.ok(service.update(uuid, req));
     }
 
     @DeleteMapping("/{uuid}")
     public ResponseEntity<Void> delete(@PathVariable UUID uuid) {
-        insuredService.delete(uuid);
+        service.delete(uuid);
         return ResponseEntity.noContent().build();
     }
 }
+

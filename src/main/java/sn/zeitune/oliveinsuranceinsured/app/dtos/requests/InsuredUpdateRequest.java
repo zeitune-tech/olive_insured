@@ -1,13 +1,10 @@
-package sn.zeitune.oliveinsuranceinsured.app.dtos.responses;
+package sn.zeitune.oliveinsuranceinsured.app.dtos.requests;
 
 import lombok.Builder;
-import java.time.Instant;
 import java.time.LocalDate;
-import java.util.UUID;
 
 @Builder
-public record InsuredResponse(
-        UUID uuid,
+public record InsuredUpdateRequest(
         String civilite,
         String nom,
         String prenom,
@@ -15,16 +12,14 @@ public record InsuredResponse(
         String typePiece,
         String numeroPiece,
         String adresse,
-        String ville,
+        String villeRef,
         String email,
         String phoneFixe,
         String phoneMobile,
-        String profession,
-        String activite,
-        String qualite,
+        String professionRef,
+        String activiteRef,
+        String qualiteRef,
         String nomEntreprise,
         String patente,
-        String registreDeCommerce,
-        Instant createdAt,
-        Instant updatedAt
+        String registreDeCommerce
 ) {}

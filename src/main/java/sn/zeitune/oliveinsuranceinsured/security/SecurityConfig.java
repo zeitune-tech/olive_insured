@@ -27,7 +27,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers("/public/**").permitAll()
-                        .requestMatchers("/inter-services/**").permitAll()
+                        .requestMatchers("/interservices/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/app/**").hasRole("USER")
                         .anyRequest().authenticated()

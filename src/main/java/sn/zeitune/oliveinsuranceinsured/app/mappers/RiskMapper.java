@@ -11,6 +11,7 @@ public class RiskMapper {
     public static Risk toEntity(RiskCreateRequest r) {
         return Risk.builder()
                 .immatriculation(r.immatriculation())
+                .ordre(r.ordre())
                 .marque(null)
                 .modele(null)
                 .genreUuid(r.genreUuid())
@@ -35,6 +36,7 @@ public class RiskMapper {
 
     public static void applyUpdates(Risk entity, RiskUpdateRequest r) {
         if (r.immatriculation() != null) entity.setImmatriculation(r.immatriculation());
+        if (r.ordre() != null) entity.setOrdre(r.ordre());
         if (r.genreUuid() != null) entity.setGenreUuid(r.genreUuid());
         if (r.usageUuid() != null) entity.setUsageUuid(r.usageUuid());
         if (r.dateMiseEnCirculation() != null) entity.setDateMiseEnCirculation(r.dateMiseEnCirculation());
@@ -58,6 +60,7 @@ public class RiskMapper {
         return new RiskResponse(
                 e.getUuid(),
                 e.getImmatriculation(),
+                e.getOrdre(),
                 e.getMarque(),
                 e.getModele(),
                 e.getGenreUuid(),

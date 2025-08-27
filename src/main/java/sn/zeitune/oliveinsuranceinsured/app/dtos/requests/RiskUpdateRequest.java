@@ -8,6 +8,7 @@ import java.util.UUID;
 @Builder
 public record RiskUpdateRequest(
         String immatriculation,
+        Integer ordre,
         String marqueRef,
         String modeleRef,
         UUID genreUuid,

@@ -60,6 +60,7 @@ public class RiskServiceImpl implements RiskService {
         if (request.genreUuid() != null || request.usageUuid() != null || request.numAttestationUuid() != null) {
             validateRefs(new RiskCreateRequest(
                     request.immatriculation() != null ? request.immatriculation() : entity.getImmatriculation(),
+                    request.ordre() != null ? request.ordre() : entity.getOrdre(),
                     request.marqueRef(), request.modeleRef(),
                     request.genreUuid() != null ? request.genreUuid() : entity.getGenreUuid(),
                     request.usageUuid() != null ? request.usageUuid() : entity.getUsageUuid(),
@@ -96,7 +97,7 @@ public class RiskServiceImpl implements RiskService {
         RiskViewResponse.AttestationDto attDto = att == null ? null : new RiskViewResponse.AttestationDto(att.uuid(), att.numero(), att.statut());
 
         return new RiskViewResponse(
-                e.getUuid(), e.getImmatriculation(), e.getMarque(), e.getModele(),
+                e.getUuid(), e.getImmatriculation(), e.getOrdre(),e.getMarque(), e.getModele(),
                 genreDto, usageDto,
                 e.getDateMiseEnCirculation(), e.getEnergie() != null ? e.getEnergie().name() : null,
                 e.getNumChassis(), e.getNumMoteur(), e.getTypeCarrosserie() != null ? e.getTypeCarrosserie().name() : null,

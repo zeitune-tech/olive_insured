@@ -10,6 +10,7 @@ import java.util.UUID;
 public record RiskResponse(
         UUID uuid,
         String immatriculation,
+        Integer ordre,
         String marque,
         String modele,
         UUID genreUuid,

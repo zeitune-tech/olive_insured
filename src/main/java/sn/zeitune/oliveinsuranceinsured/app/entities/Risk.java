@@ -41,6 +41,8 @@ public class Risk {
     @Column(nullable = false)
     private String immatriculation;
 
+    private Integer ordre;
+
     // #ref copied labels
     private String marque;
     private String modele;

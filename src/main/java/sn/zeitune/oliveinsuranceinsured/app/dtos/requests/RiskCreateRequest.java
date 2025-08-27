@@ -9,6 +9,7 @@ import java.util.UUID;
 @Builder
 public record RiskCreateRequest(
         @NotBlank String immatriculation,
+        Integer ordre,
         String marqueRef,
         String modeleRef,
         UUID genreUuid,

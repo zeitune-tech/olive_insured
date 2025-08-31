@@ -61,7 +61,7 @@ spring:
     password: lhacksrt
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true

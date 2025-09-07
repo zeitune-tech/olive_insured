@@ -28,5 +28,15 @@ public record RiskCreateRequest(
         @Positive Integer nbPlace,
         UUID numAttestationUuid,
         @PositiveOrZero BigDecimal valeurANeuve,
-        @PositiveOrZero BigDecimal valeurVenale
+        @PositiveOrZero BigDecimal valeurVenale,
+        UUID insuredUuid,
+        String nomConducteur,
+        String sexeConducteur,
+        LocalDate dateNaissanceConducteur,
+        String typePermis,
+        String numPermis,
+        LocalDate dateDelivrancePermis,
+        String lieuDelivrancePermis,
+        Boolean delegationCredit,
+        String zone
 ) {}

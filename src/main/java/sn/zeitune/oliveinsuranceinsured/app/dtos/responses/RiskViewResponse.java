@@ -30,6 +30,16 @@ public record RiskViewResponse(
         AttestationDto attestation,
         BigDecimal valeurANeuve,
         BigDecimal valeurVenale,
+        UUID insuredUuid,
+        String nomConducteur,
+        String sexeConducteur,
+        LocalDate dateNaissanceConducteur,
+        String typePermis,
+        String numPermis,
+        LocalDate dateDelivrancePermis,
+        String lieuDelivrancePermis,
+        Boolean delegationCredit,
+        String zone,
         Instant createdAt,
         Instant updatedAt
 ) {

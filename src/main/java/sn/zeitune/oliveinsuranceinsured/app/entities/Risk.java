@@ -3,11 +3,14 @@ package sn.zeitune.oliveinsuranceinsured.app.entities;
 import jakarta.persistence.*;
 import lombok.*;
 import sn.zeitune.oliveinsuranceinsured.enums.Energie;
+import sn.zeitune.oliveinsuranceinsured.enums.Gender;
+import sn.zeitune.oliveinsuranceinsured.enums.LicenseCategory;
 import sn.zeitune.oliveinsuranceinsured.enums.TypeCarrosserie;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -38,6 +41,14 @@ public class Risk {
     @Column(nullable = false, updatable = false, unique = true)
     private UUID uuid;
 
+    @Column(name = "is_fleet_member")
+    private Boolean isFleetMember = false;
+
+    @Column(name = "parent_fleet_police_uuid")
+    private UUID parentFleetPoliceUuid;
+
+    private Integer numAvenant;
+
     @Column(nullable = false)
     private String immatriculation;
 
@@ -48,6 +59,43 @@ public class Risk {
     private String modele;
 
     // ##ref strong references
+    @Column(name = "produit_uuid")
+    private UUID produitUuid;
+
+    @Column(name = "insured_uuid")
+    private UUID insuredUuid;
+
+    @OneToMany(mappedBy = "risk", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<RiskDriverEntry> driverEntries;
+
+    @Column(name = "nom_conducteur")
+    private String nomConducteur;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "sexe_conducteur")
+    private Gender sexeConducteur;
+
+    @Column(name = "date_naissance_conducteur")
+    private LocalDate dateNaissanceConducteur;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "type_permis")
+    private LicenseCategory typePermis;
+
+    @Column(name = "num_permis")
+    private String numPermis;
+
+    @Column(name = "date_delivrance_permis")
+    private LocalDate dateDelivrancePermis;
+
+    @Column(name = "lieu_delivrance_permis")
+    private String lieuDelivrancePermis;
+
+    @Column(name = "delegation_credit")
+    private Boolean delegationCredit = false;
+
+    private String zone;
+
     @Column(name = "genre_uuid")
     private UUID genreUuid;
     @Column(name = "usage_uuid")
@@ -79,6 +127,15 @@ public class Risk {
 
     @Column(name = "num_attestation_uuid")
     private UUID numAttestationUuid;
+
+    @Column(name = "formule_pt_uuid")
+    private UUID formulePTUuid;
+
+    // Business fields
+    private Integer nbPT;
+
+    @Column(name = "vitesse")
+    private Integer vitesse;
 
     @Column(name = "valeur_a_neuve")
     private BigDecimal valeurANeuve;

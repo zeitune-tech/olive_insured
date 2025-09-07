@@ -27,5 +27,15 @@ public record RiskUpdateRequest(
         Integer nbPlace,
         UUID numAttestationUuid,
         BigDecimal valeurANeuve,
-        BigDecimal valeurVenale
+        BigDecimal valeurVenale,
+        UUID insuredUuid,
+        String nomConducteur,
+        String sexeConducteur,
+        LocalDate dateNaissanceConducteur,
+        String typePermis,
+        String numPermis,
+        LocalDate dateDelivrancePermis,
+        String lieuDelivrancePermis,
+        Boolean delegationCredit,
+        String zone
 ) {}

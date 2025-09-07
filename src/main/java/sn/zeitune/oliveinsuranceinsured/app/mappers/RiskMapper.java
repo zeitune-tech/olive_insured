@@ -5,6 +5,8 @@ import sn.zeitune.oliveinsuranceinsured.app.dtos.requests.RiskUpdateRequest;
 import sn.zeitune.oliveinsuranceinsured.app.dtos.responses.RiskResponse;
 import sn.zeitune.oliveinsuranceinsured.app.entities.Risk;
 import sn.zeitune.oliveinsuranceinsured.enums.Energie;
+import sn.zeitune.oliveinsuranceinsured.enums.Gender;
+import sn.zeitune.oliveinsuranceinsured.enums.LicenseCategory;
 import sn.zeitune.oliveinsuranceinsured.enums.TypeCarrosserie;
 
 public class RiskMapper {
@@ -31,6 +33,16 @@ public class RiskMapper {
                 .numAttestationUuid(r.numAttestationUuid())
                 .valeurANeuve(r.valeurANeuve())
                 .valeurVenale(r.valeurVenale())
+                .insuredUuid(r.insuredUuid())
+                .nomConducteur(r.nomConducteur())
+                .sexeConducteur(parseGender(r.sexeConducteur()))
+                .dateNaissanceConducteur(r.dateNaissanceConducteur())
+                .typePermis(parseLicenseCategory(r.typePermis()))
+                .numPermis(r.numPermis())
+                .dateDelivrancePermis(r.dateDelivrancePermis())
+                .lieuDelivrancePermis(r.lieuDelivrancePermis())
+                .delegationCredit(r.delegationCredit())
+                .zone(r.zone())
                 .build();
     }
 
@@ -54,6 +66,16 @@ public class RiskMapper {
         if (r.numAttestationUuid() != null) entity.setNumAttestationUuid(r.numAttestationUuid());
         if (r.valeurANeuve() != null) entity.setValeurANeuve(r.valeurANeuve());
         if (r.valeurVenale() != null) entity.setValeurVenale(r.valeurVenale());
+        if (r.insuredUuid() != null) entity.setInsuredUuid(r.insuredUuid());
+        if (r.nomConducteur() != null) entity.setNomConducteur(r.nomConducteur());
+        if (r.sexeConducteur() != null) entity.setSexeConducteur(parseGender(r.sexeConducteur()));
+        if (r.dateNaissanceConducteur() != null) entity.setDateNaissanceConducteur(r.dateNaissanceConducteur());
+        if (r.typePermis() != null) entity.setTypePermis(parseLicenseCategory(r.typePermis()));
+        if (r.numPermis() != null) entity.setNumPermis(r.numPermis());
+        if (r.dateDelivrancePermis() != null) entity.setDateDelivrancePermis(r.dateDelivrancePermis());
+        if (r.lieuDelivrancePermis() != null) entity.setLieuDelivrancePermis(r.lieuDelivrancePermis());
+        if (r.delegationCredit() != null) entity.setDelegationCredit(r.delegationCredit());
+        if (r.zone() != null) entity.setZone(r.zone());
     }
 
     public static RiskResponse toResponse(Risk e) {
@@ -80,6 +102,16 @@ public class RiskMapper {
                 e.getNumAttestationUuid(),
                 e.getValeurANeuve(),
                 e.getValeurVenale(),
+                e.getInsuredUuid(),
+                e.getNomConducteur(),
+                e.getSexeConducteur() != null ? e.getSexeConducteur().name() : null,
+                e.getDateNaissanceConducteur(),
+                e.getTypePermis() != null ? e.getTypePermis().name() : null,
+                e.getNumPermis(),
+                e.getDateDelivrancePermis(),
+                e.getLieuDelivrancePermis(),
+                e.getDelegationCredit(),
+                e.getZone(),
                 e.getCreatedAt(),
                 e.getUpdatedAt()
         );
@@ -93,6 +125,16 @@ public class RiskMapper {
     private static TypeCarrosserie parseTypeCarrosserie(String s) {
         if (s == null) return null;
         return TypeCarrosserie.valueOf(s.trim().toUpperCase());
+    }
+
+    private static Gender parseGender(String s) {
+        if (s == null) return null;
+        return Gender.valueOf(s.trim().toUpperCase());
+    }
+
+    private static LicenseCategory parseLicenseCategory(String s) {
+        if (s == null) return null;
+        return LicenseCategory.valueOf(s.trim().toUpperCase());
     }
 }
 

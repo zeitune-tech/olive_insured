@@ -69,7 +69,17 @@ public class RiskServiceImpl implements RiskService {
                     request.hasTurbo(), request.hasRemorque(), request.isEnflammable(),
                     request.puissance(), request.tonnage(), request.cylindre(), request.nbPlace(),
                     request.numAttestationUuid() != null ? request.numAttestationUuid() : entity.getNumAttestationUuid(),
-                    request.valeurANeuve(), request.valeurVenale()
+                    request.valeurANeuve(), request.valeurVenale(),
+                    request.insuredUuid() != null ? request.insuredUuid() : entity.getInsuredUuid(),
+                    request.nomConducteur() != null ? request.nomConducteur() : entity.getNomConducteur(),
+                    request.sexeConducteur() != null ? request.sexeConducteur() : (entity.getSexeConducteur() != null ? entity.getSexeConducteur().name() : null),
+                    request.dateNaissanceConducteur() != null ? request.dateNaissanceConducteur() : entity.getDateNaissanceConducteur(),
+                    request.typePermis() != null ? request.typePermis() : (entity.getTypePermis() != null ? entity.getTypePermis().name() : null),
+                    request.numPermis() != null ? request.numPermis() : entity.getNumPermis(),
+                    request.dateDelivrancePermis() != null ? request.dateDelivrancePermis() : entity.getDateDelivrancePermis(),
+                    request.lieuDelivrancePermis() != null ? request.lieuDelivrancePermis() : entity.getLieuDelivrancePermis(),
+                    request.delegationCredit() != null ? request.delegationCredit() : entity.getDelegationCredit(),
+                    request.zone() != null ? request.zone() : entity.getZone()
             ));
         }
         RiskMapper.applyUpdates(entity, request);
@@ -104,7 +114,18 @@ public class RiskServiceImpl implements RiskService {
                 e.getHasTurbo(), e.getHasRemorque(), e.getIsEnflammable(),
                 e.getPuissance(), e.getTonnage(), e.getCylindre(), e.getNbPlace(),
                 attDto,
-                e.getValeurANeuve(), e.getValeurVenale(), e.getCreatedAt(), e.getUpdatedAt()
+                e.getValeurANeuve(), e.getValeurVenale(),
+                e.getInsuredUuid(),
+                e.getNomConducteur(),
+                e.getSexeConducteur() != null ? e.getSexeConducteur().name() : null,
+                e.getDateNaissanceConducteur(),
+                e.getTypePermis() != null ? e.getTypePermis().name() : null,
+                e.getNumPermis(),
+                e.getDateDelivrancePermis(),
+                e.getLieuDelivrancePermis(),
+                e.getDelegationCredit(),
+                e.getZone(),
+                e.getCreatedAt(), e.getUpdatedAt()
         );
     }
 

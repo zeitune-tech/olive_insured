@@ -32,10 +32,9 @@ public class InsuredServiceImpl implements InsuredService {
         validateInsured(request);
         Insured entity = InsuredMapper.toEntity(request);
         // resolve #ref and copy labels
-        entity.setVille(resolveVille(request.villeRef()));
-        entity.setProfession(resolveLabel(request.professionRef(), "profession"));
-        entity.setActivite(resolveLabel(request.activiteRef(), "activite"));
-        entity.setQualite(resolveLabel(request.qualiteRef(), "qualite"));
+        entity.setVille(request.villeRef());
+        entity.setProfession(request.professionRef());
+        entity.setActivite(request.activiteRef());
         entity = repository.save(entity);
         return InsuredMapper.toResponse(entity);
     }
@@ -70,7 +69,6 @@ public class InsuredServiceImpl implements InsuredService {
         if (request.villeRef() != null) insured.setVille(resolveVille(request.villeRef()));
         if (request.professionRef() != null) insured.setProfession(resolveLabel(request.professionRef(), "profession"));
         if (request.activiteRef() != null) insured.setActivite(resolveLabel(request.activiteRef(), "activite"));
-        if (request.qualiteRef() != null) insured.setQualite(resolveLabel(request.qualiteRef(), "qualite"));
         return InsuredMapper.toResponse(insured);
     }
 

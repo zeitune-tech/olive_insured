@@ -21,7 +21,6 @@ public record InsuredResponse(
         String phoneMobile,
         String profession,
         String activite,
-        String qualite,
         String nomEntreprise,
         String patente,
         String registreDeCommerce,

@@ -18,7 +18,6 @@ public record InsuredUpdateRequest(
         String phoneMobile,
         String professionRef,
         String activiteRef,
-        String qualiteRef,
         String nomEntreprise,
         String patente,
         String registreDeCommerce

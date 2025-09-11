@@ -59,7 +59,6 @@ public class InsuredMapper {
                 e.getPhoneMobile(),
                 e.getProfession(),
                 e.getActivite(),
-                e.getQualite(),
                 e.getNomEntreprise(),
                 e.getPatente(),
                 e.getRegistreDeCommerce(),

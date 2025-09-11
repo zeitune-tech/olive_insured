@@ -61,7 +61,6 @@ public class Insured {
     private String ville;
     private String profession;
     private String activite;
-    private String qualite;
 
     private String email;
     @Column(name = "phone_fixe")

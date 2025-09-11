@@ -19,7 +19,6 @@ public record InsuredCreateRequest(
         @Pattern(regexp = "^\\+?[1-9]\\d{1,14}$", message = "Invalid E.164 format") String phoneMobile,
         String professionRef,
         String activiteRef,
-        String qualiteRef,
         String nomEntreprise,
         String patente,
         String registreDeCommerce

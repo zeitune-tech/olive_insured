@@ -130,12 +130,12 @@ public class RiskServiceImpl implements RiskService {
     }
 
     private void validateRefs(RiskCreateRequest r) {
-        if (r.genreUuid() != null && settingsClient.getGenre(r.genreUuid()).isEmpty())
-            throw new BusinessException("Genre introuvable: " + r.genreUuid());
-        if (r.usageUuid() != null && settingsClient.getUsage(r.usageUuid()).isEmpty())
-            throw new BusinessException("Usage introuvable: " + r.usageUuid());
-        if (r.numAttestationUuid() != null && attestationClient.get(r.numAttestationUuid()).isEmpty())
-            throw new BusinessException("Attestation introuvable: " + r.numAttestationUuid());
+//        if (r.genreUuid() != null && settingsClient.getGenre(r.genreUuid()).isEmpty())
+//            throw new BusinessException("Genre introuvable: " + r.genreUuid());
+//        if (r.usageUuid() != null && settingsClient.getUsage(r.usageUuid()).isEmpty())
+//            throw new BusinessException("Usage introuvable: " + r.usageUuid());
+//        if (r.numAttestationUuid() != null && attestationClient.get(r.numAttestationUuid()).isEmpty())
+//            throw new BusinessException("Attestation introuvable: " + r.numAttestationUuid());
         if (r.nbPlace() != null && r.nbPlace() <= 0)
             throw new BusinessException("nbPlace doit être > 0");
     }

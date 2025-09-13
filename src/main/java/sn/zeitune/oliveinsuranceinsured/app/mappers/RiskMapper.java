@@ -51,6 +51,7 @@ public class RiskMapper {
                 .creditDelegation(request.creditDelegation())
                 .zone(request.zone())
                 .vehicleTypeUuid(request.vehicleTypeUuid())
+                .genreUuid(request.genreUuid())
                 .usageUuid(request.usageUuid())
                 .firstRegistrationDate(request.firstRegistrationDate())
                 .energie(request.energie())
@@ -102,6 +103,7 @@ public class RiskMapper {
                 entity.getCreditDelegation(),
                 entity.getZone(),
                 entity.getVehicleTypeUuid(),
+                entity.getGenreUuid(),
                 entity.getUsageUuid(),
                 entity.getFirstRegistrationDate(),
                 entity.getEnergie(),
@@ -162,6 +164,7 @@ public class RiskMapper {
                 entity.getCreditDelegation(),
                 entity.getZone(),
                 entity.getVehicleTypeUuid(),
+                entity.getGenreUuid(),
                 entity.getUsageUuid(),
                 entity.getFirstRegistrationDate(),
                 entity.getEnergie(),
@@ -253,6 +256,9 @@ public class RiskMapper {
         }
         if (request.vehicleTypeUuid() != null) {
             entity.setVehicleTypeUuid(request.vehicleTypeUuid());
+        }
+        if (request.genreUuid() != null) {
+            entity.setGenreUuid(request.genreUuid());
         }
         if (request.usageUuid() != null) {
             entity.setUsageUuid(request.usageUuid());

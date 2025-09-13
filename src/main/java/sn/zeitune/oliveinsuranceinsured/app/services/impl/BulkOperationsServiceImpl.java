@@ -57,6 +57,7 @@ public class BulkOperationsServiceImpl implements BulkOperationsService {
                 request.risk().creditDelegation(),
                 request.risk().zone(),
                 request.risk().vehicleTypeUuid(),
+                request.risk().genreUuid(),
                 request.risk().usageUuid(),
                 request.risk().firstRegistrationDate(),
                 request.risk().energie(),

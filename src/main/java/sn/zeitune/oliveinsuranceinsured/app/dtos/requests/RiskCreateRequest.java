@@ -57,6 +57,7 @@ public record RiskCreateRequest(
 
         UUID vehicleTypeUuid,
 
+        UUID genreUuid,
         UUID usageUuid,
 
         LocalDate firstRegistrationDate,

@@ -39,6 +39,7 @@ public record RiskViewResponse(
         Boolean creditDelegation,
         String zone,
         UUID vehicleTypeUuid,
+        UUID genreUuid,
         UUID usageUuid,
         LocalDate firstRegistrationDate,
         Energie energie,

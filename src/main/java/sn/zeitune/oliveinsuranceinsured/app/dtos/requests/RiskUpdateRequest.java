@@ -55,6 +55,7 @@ public record RiskUpdateRequest(
 
         UUID vehicleTypeUuid,
 
+        UUID genreUuid,
         UUID usageUuid,
 
         LocalDate firstRegistrationDate,

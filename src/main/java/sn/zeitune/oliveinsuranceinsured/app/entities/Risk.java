@@ -10,6 +10,7 @@ import sn.zeitune.oliveinsuranceinsured.enums.TypeCarrosserie;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,8 +27,7 @@ import java.util.UUID;
         },
         indexes = {
                 @Index(name = "idx_risk_genre", columnList = "genre_uuid"),
-                @Index(name = "idx_risk_usage", columnList = "usage_uuid"),
-                @Index(name = "idx_risk_attestation", columnList = "num_attestation_uuid")
+                @Index(name = "idx_risk_usage", columnList = "usage_uuid")
         }
 )
 //@SQLDelete(sql = "UPDATE risk SET deleted = true, deleted_at = now() WHERE id = ?")
@@ -59,88 +59,99 @@ public class Risk {
     private String modele;
 
     // ##ref strong references
-    @Column(name = "produit_uuid")
-    private UUID produitUuid;
+    @Column(name = "product_uuid")
+    private UUID productUuid;
 
-    @Column(name = "insured_uuid")
-    private UUID insuredUuid;
+    // Relation JPA avec l'assuré (même microservice)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "insured_uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
+    private Insured insured;
 
     @OneToMany(mappedBy = "risk", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RiskDriverEntry> driverEntries;
 
-    @Column(name = "nom_conducteur")
-    private String nomConducteur;
+    @Column(name = "driver_name")
+    private String driverName;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "sexe_conducteur")
-    private Gender sexeConducteur;
+    @Column(name = "driver_gender")
+    private Gender driverGender;
 
-    @Column(name = "date_naissance_conducteur")
-    private LocalDate dateNaissanceConducteur;
+    @Column(name = "driver_birth_date")
+    private LocalDate driverBirthDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type_permis")
-    private LicenseCategory typePermis;
+    @Column(name = "license_type")
+    private LicenseCategory licenseType;
 
-    @Column(name = "num_permis")
-    private String numPermis;
+    @Column(name = "license_number")
+    private String licenseNumber;
 
-    @Column(name = "date_delivrance_permis")
-    private LocalDate dateDelivrancePermis;
+    @Column(name = "license_issue_date")
+    private LocalDate licenseIssueDate;
 
-    @Column(name = "lieu_delivrance_permis")
-    private String lieuDelivrancePermis;
+    @Column(name = "license_issue_place")
+    private String licenseIssuePlace;
 
-    @Column(name = "delegation_credit")
-    private Boolean delegationCredit = false;
+    @Column(name = "credit_delegation")
+    private Boolean creditDelegation = false;
 
     private String zone;
 
+    @Column(name = "vehicle_type_uuid")
+    private UUID vehicleTypeUuid;
+
     @Column(name = "genre_uuid")
     private UUID genreUuid;
+
     @Column(name = "usage_uuid")
     private UUID usageUuid;
 
-    @Column(name = "date_mise_en_circulation")
-    private LocalDate dateMiseEnCirculation;
+    @Column(name = "first_registration_date")
+    private LocalDate firstRegistrationDate;
 
     @Enumerated(EnumType.STRING)
     private Energie energie;
 
-    @Column(name = "num_chassis")
-    private String numChassis;
-    @Column(name = "num_moteur")
-    private String numMoteur;
+    @Column(name = "chassis_number")
+    private String chassisNumber;
+    @Column(name = "engine_number")
+    private String engineNumber;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type_carrosserie")
-    private TypeCarrosserie typeCarrosserie;
+    @Column(name = "body_type")
+    private TypeCarrosserie bodyType;
 
     private Boolean hasTurbo;
-    private Boolean hasRemorque;
-    private Boolean isEnflammable;
+    private Boolean hasTrailer;
+    private Boolean isFlammable;
 
-    private BigDecimal puissance;
+    private BigDecimal power;
     private BigDecimal tonnage;
-    private BigDecimal cylindre;
-    private Integer nbPlace;
+    private BigDecimal  cylinder;
+    private Integer seatCount;
 
-    @Column(name = "num_attestation_uuid")
-    private UUID numAttestationUuid;
+    @Column(name = "attestation_number_uuid")
+    private UUID attestationNumberUuid;
 
-    @Column(name = "formule_pt_uuid")
-    private UUID formulePTUuid;
+    @Column(name = "formula_pt_uuid")
+    private UUID formulaPTUuid;
 
-    // Business fields
-    private Integer nbPT;
+    // Business fields - moved from Police for fleet support
+    @Column(name = "nb_persons_transported")
+    private Integer nbPersonsTransported;
 
-    @Column(name = "vitesse")
-    private Integer vitesse;
+    @Column(name = "max_speed")
+    private Integer maxSpeed;
 
-    @Column(name = "valeur_a_neuve")
-    private BigDecimal valeurANeuve;
-    @Column(name = "valeur_venale")
-    private BigDecimal valeurVenale;
+    @Column(name = "new_value")
+    private BigDecimal newValue;
+    @Column(name = "market_value")
+    private BigDecimal marketValue;
+
+    // Primes garanties (déplacées de Police vers Risk car propres à chaque risque)
+    @OneToMany(mappedBy = "risk", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<PrimeGarantie> primesGaranties = new ArrayList<>();
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;

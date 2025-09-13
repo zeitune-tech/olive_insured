@@ -1,48 +1,68 @@
 package sn.zeitune.oliveinsuranceinsured.app.dtos.responses;
 
-import lombok.Builder;
+import sn.zeitune.oliveinsuranceinsured.enums.Energie;
+import sn.zeitune.oliveinsuranceinsured.enums.Gender;
+import sn.zeitune.oliveinsuranceinsured.enums.LicenseCategory;
+import sn.zeitune.oliveinsuranceinsured.enums.TypeCarrosserie;
+
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
-@Builder
 public record RiskViewResponse(
+        Long id,
         UUID uuid,
+        Boolean isFleetMember,
+        UUID parentFleetPoliceUuid,
+        Integer numAvenant,
         String immatriculation,
         Integer ordre,
         String marque,
         String modele,
-        RefDto genre,
-        RefDto usage,
-        LocalDate dateMiseEnCirculation,
-        String energie,
-        String numChassis,
-        String numMoteur,
-        String typeCarrosserie,
-        Boolean hasTurbo,
-        Boolean hasRemorque,
-        Boolean isEnflammable,
-        BigDecimal puissance,
-        BigDecimal tonnage,
-        BigDecimal cylindre,
-        Integer nbPlace,
-        AttestationDto attestation,
-        BigDecimal valeurANeuve,
-        BigDecimal valeurVenale,
-        UUID insuredUuid,
-        String nomConducteur,
-        String sexeConducteur,
-        LocalDate dateNaissanceConducteur,
-        String typePermis,
-        String numPermis,
-        LocalDate dateDelivrancePermis,
-        String lieuDelivrancePermis,
-        Boolean delegationCredit,
+        UUID productUuid,
+
+        // Nested insured information
+        InsuredResponse insured,
+
+        // Driver entries list
+        List<RiskDriverEntryResponse> driverEntries,
+
+        String driverName,
+        Gender driverGender,
+        LocalDate driverBirthDate,
+        LicenseCategory licenseType,
+        String licenseNumber,
+        LocalDate licenseIssueDate,
+        String licenseIssuePlace,
+        Boolean creditDelegation,
         String zone,
+        UUID vehicleTypeUuid,
+        UUID usageUuid,
+        LocalDate firstRegistrationDate,
+        Energie energie,
+        String chassisNumber,
+        String engineNumber,
+        TypeCarrosserie bodyType,
+        Boolean hasTurbo,
+        Boolean hasTrailer,
+        Boolean isFlammable,
+        BigDecimal power,
+        BigDecimal tonnage,
+        BigDecimal cylinder,
+        Integer seatCount,
+        UUID attestationNumberUuid,
+        UUID formulaPTUuid,
+        Integer nbPersonsTransported,
+        Integer maxSpeed,
+        BigDecimal newValue,
+        BigDecimal marketValue,
+
+        // Primes garanties list
+        List<PrimeGarantieResponse> primesGaranties,
+
         Instant createdAt,
         Instant updatedAt
 ) {
-    public record RefDto(UUID uuid, String code, String libelle) {}
-    public record AttestationDto(UUID uuid, String numero, String statut) {}
 }

@@ -3,11 +3,9 @@ package sn.zeitune.oliveinsuranceinsured.app.dtos.requests;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 
-public record RiskDriverEntryCreateRequest(
-        @NotNull(message = "Risk ID is required")
+public record RiskDriverEntryUpdateRequest(
         Long riskId,
 
-        @NotNull(message = "Date entree is required")
         LocalDate dateEntree,
 
         @Future(message = "Date retrait must be in the future if provided")

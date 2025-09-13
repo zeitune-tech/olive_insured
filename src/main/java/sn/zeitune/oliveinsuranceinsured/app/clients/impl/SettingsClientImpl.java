@@ -96,6 +96,23 @@ public class SettingsClientImpl implements SettingsClient {
     }
 
     @Override
+    @Cacheable(cacheNames = "vehicleTypes", key = "#uuid")
+    public Optional<VehicleTypeDto> getVehicleType(UUID uuid) {
+        try {
+            var dto = client().get()
+                    .uri("/interservices/settings/vehicle-types/{uuid}", uuid)
+                    .retrieve()
+                    .onStatus(HttpStatusCode::isError, resp -> resp.bodyToMono(String.class).map(RuntimeException::new))
+                    .bodyToMono(VehicleTypeDto.class)
+                    .block();
+            return Optional.ofNullable(dto);
+        } catch (Exception e) {
+            log.warn("Settings vehicle type fetch failed for {}: {}", uuid, e.getMessage());
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public List<ModelDto> searchModels(String brand, String q) {
         try {
             var list = client().get()

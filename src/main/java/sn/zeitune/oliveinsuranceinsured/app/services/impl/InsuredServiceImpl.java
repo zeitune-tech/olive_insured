@@ -25,51 +25,73 @@ import java.util.UUID;
 public class InsuredServiceImpl implements InsuredService {
 
     private final InsuredRepository repository;
+    private final InsuredMapper insuredMapper;
     private final SettingsClient settingsClient;
 
     @Override
     public InsuredResponse create(InsuredCreateRequest request) {
         validateInsured(request);
-        Insured entity = InsuredMapper.toEntity(request);
-        // resolve #ref and copy labels
-        entity.setVille(request.villeRef());
-        entity.setProfession(request.professionRef());
-        entity.setActivite(request.activiteRef());
+
+        Insured entity = insuredMapper.toEntity(request);
+
+        // Resolve reference labels if provided
+        if (request.city() != null) {
+            entity.setCity(resolveVille(request.city()));
+        }
+        if (request.profession() != null) {
+            entity.setProfession(resolveLabel(request.profession(), "profession"));
+        }
+        if (request.activity() != null) {
+            entity.setActivity(resolveLabel(request.activity(), "activite"));
+        }
+
         entity = repository.save(entity);
-        return InsuredMapper.toResponse(entity);
+        return insuredMapper.toResponse(entity);
     }
 
     @Override
     public InsuredResponse get(UUID uuid) {
         return repository.findByUuid(uuid)
-                .map(InsuredMapper::toResponse)
+                .map(insuredMapper::toResponse)
                 .orElseThrow(() -> new NotFoundException("Insured not found: " + uuid));
     }
 
     @Override
     public Page<InsuredResponse> search(String query, Pageable pageable) {
         if (query == null || query.isBlank()) {
-            return repository.findAll(pageable).map(InsuredMapper::toResponse);
+            return repository.findAll(pageable).map(insuredMapper::toResponse);
         }
         return repository
-                .findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(query, query, pageable)
-                .map(InsuredMapper::toResponse);
+                .findByLastNameContainingIgnoreCaseOrFirstNameContainingIgnoreCase(query, query, pageable)
+                .map(insuredMapper::toResponse);
     }
 
     @Override
     public InsuredResponse update(UUID uuid, InsuredUpdateRequest request) {
         Insured insured = repository.findByUuid(uuid)
                 .orElseThrow(() -> new NotFoundException("Insured not found: " + uuid));
-        if (request.dateNaissance() != null && request.dateNaissance().isAfter(LocalDate.now()))
-            throw new BusinessException("dateNaissance must be in the past");
 
-        // apply simple updates
-        InsuredMapper.applyUpdates(insured, request);
-        // resolve #ref if provided
-        if (request.villeRef() != null) insured.setVille(resolveVille(request.villeRef()));
-        if (request.professionRef() != null) insured.setProfession(resolveLabel(request.professionRef(), "profession"));
-        if (request.activiteRef() != null) insured.setActivite(resolveLabel(request.activiteRef(), "activite"));
-        return InsuredMapper.toResponse(insured);
+        // Validate birth date if provided
+        if (request.birthDate() != null && request.birthDate().isAfter(LocalDate.now())) {
+            throw new BusinessException("Birth date must be in the past");
+        }
+
+        // Apply updates using mapper
+        insuredMapper.updateEntity(insured, request);
+
+        // Resolve reference labels if provided in update
+        if (request.city() != null) {
+            insured.setCity(resolveVille(request.city()));
+        }
+        if (request.profession() != null) {
+            insured.setProfession(resolveLabel(request.profession(), "profession"));
+        }
+        if (request.activity() != null) {
+            insured.setActivity(resolveLabel(request.activity(), "activite"));
+        }
+
+        insured = repository.save(insured);
+        return insuredMapper.toResponse(insured);
     }
 
     @Override
@@ -79,12 +101,12 @@ public class InsuredServiceImpl implements InsuredService {
         repository.delete(insured); // soft delete via @SQLDelete
     }
 
-    private void validateInsured(InsuredCreateRequest r) {
-        if (r.dateNaissance() != null) {
-            if (r.dateNaissance().isAfter(LocalDate.now())) {
-                throw new BusinessException("dateNaissance must be in the past");
+    private void validateInsured(InsuredCreateRequest request) {
+        if (request.birthDate() != null) {
+            if (request.birthDate().isAfter(LocalDate.now())) {
+                throw new BusinessException("Birth date must be in the past");
             }
-            if (r.dateNaissance().isAfter(LocalDate.now().minusYears(18))) {
+            if (request.birthDate().isAfter(LocalDate.now().minusYears(18))) {
                 throw new BusinessException("Assuré doit être majeur (>=18 ans)");
             }
         }
@@ -103,4 +125,3 @@ public class InsuredServiceImpl implements InsuredService {
         return ref;
     }
 }
-

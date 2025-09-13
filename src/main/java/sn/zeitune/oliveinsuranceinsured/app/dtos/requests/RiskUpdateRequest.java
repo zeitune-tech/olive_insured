@@ -1,41 +1,106 @@
 package sn.zeitune.oliveinsuranceinsured.app.dtos.requests;
 
-import lombok.Builder;
+import jakarta.validation.constraints.*;
+import sn.zeitune.oliveinsuranceinsured.enums.Energie;
+import sn.zeitune.oliveinsuranceinsured.enums.Gender;
+import sn.zeitune.oliveinsuranceinsured.enums.LicenseCategory;
+import sn.zeitune.oliveinsuranceinsured.enums.TypeCarrosserie;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
-@Builder
 public record RiskUpdateRequest(
+        Boolean isFleetMember,
+
+        UUID parentFleetPoliceUuid,
+
+        Integer numAvenant,
+
+        @Size(max = 20, message = "Immatriculation must not exceed 20 characters")
         String immatriculation,
+
         Integer ordre,
-        String marqueRef,
-        String modeleRef,
-        UUID genreUuid,
+
+        @Size(max = 100, message = "Marque must not exceed 100 characters")
+        String marque,
+
+        @Size(max = 100, message = "Modele must not exceed 100 characters")
+        String modele,
+
+        UUID productUuid,
+
+        @Size(max = 150, message = "Driver name must not exceed 150 characters")
+        String driverName,
+
+        Gender driverGender,
+
+        @Past(message = "Driver birth date must be in the past")
+        LocalDate driverBirthDate,
+
+        LicenseCategory licenseType,
+
+        @Size(max = 50, message = "License number must not exceed 50 characters")
+        String licenseNumber,
+
+        LocalDate licenseIssueDate,
+
+        @Size(max = 100, message = "License issue place must not exceed 100 characters")
+        String licenseIssuePlace,
+
+        Boolean creditDelegation,
+
+        @Size(max = 100, message = "Zone must not exceed 100 characters")
+        String zone,
+
+        UUID vehicleTypeUuid,
+
         UUID usageUuid,
-        LocalDate dateMiseEnCirculation,
-        String energie,
-        String numChassis,
-        String numMoteur,
-        String typeCarrosserie,
+
+        LocalDate firstRegistrationDate,
+
+        Energie energie,
+
+        @Size(max = 50, message = "Chassis number must not exceed 50 characters")
+        String chassisNumber,
+
+        @Size(max = 50, message = "Engine number must not exceed 50 characters")
+        String engineNumber,
+
+        TypeCarrosserie bodyType,
+
         Boolean hasTurbo,
-        Boolean hasRemorque,
-        Boolean isEnflammable,
-        BigDecimal puissance,
+
+        Boolean hasTrailer,
+
+        Boolean isFlammable,
+
+        @DecimalMin(value = "0.0", message = "Power must be positive")
+        BigDecimal power,
+
+        @DecimalMin(value = "0.0", message = "Tonnage must be positive")
         BigDecimal tonnage,
-        BigDecimal cylindre,
-        Integer nbPlace,
-        UUID numAttestationUuid,
-        BigDecimal valeurANeuve,
-        BigDecimal valeurVenale,
-        UUID insuredUuid,
-        String nomConducteur,
-        String sexeConducteur,
-        LocalDate dateNaissanceConducteur,
-        String typePermis,
-        String numPermis,
-        LocalDate dateDelivrancePermis,
-        String lieuDelivrancePermis,
-        Boolean delegationCredit,
-        String zone
-) {}
+
+        @DecimalMin(value = "0.0", message = "Cylinder must be positive")
+        BigDecimal cylinder,
+
+        @Min(value = 1, message = "Seat count must be at least 1")
+        Integer seatCount,
+
+        UUID attestationNumberUuid,
+
+        UUID formulaPTUuid,
+
+        @Min(value = 1, message = "Number of persons transported must be at least 1")
+        Integer nbPersonsTransported,
+
+        @Min(value = 1, message = "Max speed must be positive")
+        Integer maxSpeed,
+
+        @DecimalMin(value = "0.0", message = "New value must be positive")
+        BigDecimal newValue,
+
+        @DecimalMin(value = "0.0", message = "Market value must be positive")
+        BigDecimal marketValue
+) {
+}

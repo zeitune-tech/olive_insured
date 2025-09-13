@@ -17,11 +17,11 @@ import java.util.UUID;
 @Entity
 @Table(name = "insured",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uk_insured_piece", columnNames = {"type_piece", "numero_piece"}),
+                @UniqueConstraint(name = "uk_insured_piece", columnNames = {"id_document_type", "id_document_number"}),
                 @UniqueConstraint(name = "uk_insured_uuid", columnNames = {"uuid"})
         },
         indexes = {
-                @Index(name = "idx_insured_nom_prenom", columnList = "nom, prenom"),
+                @Index(name = "idx_insured_nom_prenom", columnList = "last_name, first_name"),
                 @Index(name = "idx_insured_email", columnList = "email")
         }
 )
@@ -37,42 +37,43 @@ public class Insured {
     private UUID uuid;
 
     @Enumerated(EnumType.STRING)
-    private Civilite civilite;
+    @Column(name = "civility")
+    private Civilite civility;
 
-    @Column(nullable = false)
-    private String nom;
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
 
-    @Column(nullable = false)
-    private String prenom;
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
 
-    @Column(name = "date_naissance", nullable = false)
-    private LocalDate dateNaissance;
+    @Column(name = "birth_date", nullable = false)
+    private LocalDate birthDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type_piece")
-    private TypePiece typePiece;
+    @Column(name = "id_document_type")
+    private TypePiece idDocumentType;
 
-    @Column(name = "numero_piece")
-    private String numeroPiece;
+    @Column(name = "id_document_number")
+    private String idDocumentNumber;
 
-    private String adresse;
+    private String address;
 
-    // denormalized labels (#ref)
-    private String ville;
+    private String city;
     private String profession;
-    private String activite;
+    private String activity;
 
     private String email;
-    @Column(name = "phone_fixe")
-    private String phoneFixe;
-    @Column(name = "phone_mobile")
-    private String phoneMobile;
+    @Column(name = "landline_phone")
+    private String landlinePhone;
+    @Column(name = "mobile_phone")
+    private String mobilePhone;
 
-    @Column(name = "nom_entreprise")
-    private String nomEntreprise;
-    private String patente;
-    @Column(name = "registre_de_commerce")
-    private String registreDeCommerce;
+    @Column(name = "company_name")
+    private String companyName;
+    @Column(name = "business_license")
+    private String businessLicense;
+    @Column(name = "trade_register")
+    private String tradeRegister;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;

@@ -1,18 +1,18 @@
 package sn.zeitune.oliveinsuranceinsured.app.dtos.responses;
 
-import lombok.Builder;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
-@Builder
 public record RiskDriverEntryResponse(
+        Long id,
         UUID uuid,
-        UUID riskUuid,
+        Long riskId,
         LocalDate dateEntree,
         LocalDate dateRetrait,
         Integer avenantEntree,
         Integer avenantRetrait,
         Instant createdAt,
         Instant updatedAt
-) {}
+) {
+}

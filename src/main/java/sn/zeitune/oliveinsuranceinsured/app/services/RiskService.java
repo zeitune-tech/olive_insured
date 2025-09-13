@@ -7,6 +7,7 @@ import sn.zeitune.oliveinsuranceinsured.app.dtos.requests.RiskUpdateRequest;
 import sn.zeitune.oliveinsuranceinsured.app.dtos.responses.RiskResponse;
 import sn.zeitune.oliveinsuranceinsured.app.dtos.responses.RiskViewResponse;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface RiskService {
@@ -16,5 +17,7 @@ public interface RiskService {
     RiskResponse update(UUID uuid, RiskUpdateRequest request);
     void delete(UUID uuid);
     RiskViewResponse getView(UUID uuid);
+    List<RiskResponse> findByUuids(List<UUID> uuids);
+    List<RiskResponse> findByInsuredUuid(UUID insuredUuid);
 }
 

@@ -12,6 +12,7 @@ import sn.zeitune.oliveinsuranceinsured.app.dtos.responses.RiskResponse;
 import sn.zeitune.oliveinsuranceinsured.app.dtos.responses.RiskViewResponse;
 import sn.zeitune.oliveinsuranceinsured.app.services.RiskService;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -60,5 +61,15 @@ public class RiskInterserviceController {
     @GetMapping("/{uuid}/view")
     public ResponseEntity<RiskViewResponse> view(@PathVariable UUID uuid) {
         return ResponseEntity.ok(service.getView(uuid));
+    }
+
+    @PostMapping("/by-uuids")
+    public ResponseEntity<List<RiskResponse>> findByUuids(@RequestBody List<UUID> uuids) {
+        return ResponseEntity.ok(service.findByUuids(uuids));
+    }
+
+    @GetMapping("/by-insured/{insuredUuid}")
+    public ResponseEntity<List<RiskResponse>> findByInsuredUuid(@PathVariable UUID insuredUuid) {
+        return ResponseEntity.ok(service.findByInsuredUuid(insuredUuid));
     }
 }

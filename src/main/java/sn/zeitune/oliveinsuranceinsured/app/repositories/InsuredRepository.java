@@ -11,6 +11,6 @@ import java.util.UUID;
 
 public interface InsuredRepository extends JpaRepository<Insured, Long>, JpaSpecificationExecutor<Insured> {
     Optional<Insured> findByUuid(UUID uuid);
-    Page<Insured> findByNomContainingIgnoreCaseOrPrenomContainingIgnoreCase(String nom, String prenom, Pageable pageable);
+    Page<Insured> findByLastNameContainingIgnoreCaseOrFirstNameContainingIgnoreCase(String lastName, String firstName, Pageable pageable);
 }
 

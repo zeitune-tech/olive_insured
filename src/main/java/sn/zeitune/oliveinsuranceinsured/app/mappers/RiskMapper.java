@@ -1,140 +1,315 @@
 package sn.zeitune.oliveinsuranceinsured.app.mappers;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import sn.zeitune.oliveinsuranceinsured.app.dtos.requests.RiskCreateRequest;
 import sn.zeitune.oliveinsuranceinsured.app.dtos.requests.RiskUpdateRequest;
 import sn.zeitune.oliveinsuranceinsured.app.dtos.responses.RiskResponse;
+import sn.zeitune.oliveinsuranceinsured.app.dtos.responses.RiskViewResponse;
 import sn.zeitune.oliveinsuranceinsured.app.entities.Risk;
-import sn.zeitune.oliveinsuranceinsured.enums.Energie;
-import sn.zeitune.oliveinsuranceinsured.enums.Gender;
-import sn.zeitune.oliveinsuranceinsured.enums.LicenseCategory;
-import sn.zeitune.oliveinsuranceinsured.enums.TypeCarrosserie;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Component
 public class RiskMapper {
-    public static Risk toEntity(RiskCreateRequest r) {
+
+    @Autowired
+    private InsuredMapper insuredMapper;
+
+    @Autowired
+    private RiskDriverEntryMapper riskDriverEntryMapper;
+
+    @Autowired
+    private PrimeGarantieMapper primeGarantieMapper;
+
+    /**
+     * Converts RiskCreateRequest to Risk entity using builder pattern
+     */
+    public Risk toEntity(RiskCreateRequest request) {
+        if (request == null) {
+            return null;
+        }
+
         return Risk.builder()
-                .immatriculation(r.immatriculation())
-                .ordre(r.ordre())
-                .marque(null)
-                .modele(null)
-                .genreUuid(r.genreUuid())
-                .usageUuid(r.usageUuid())
-                .dateMiseEnCirculation(r.dateMiseEnCirculation())
-                .energie(parseEnergie(r.energie()))
-                .numChassis(r.numChassis())
-                .numMoteur(r.numMoteur())
-                .typeCarrosserie(parseTypeCarrosserie(r.typeCarrosserie()))
-                .hasTurbo(r.hasTurbo())
-                .hasRemorque(r.hasRemorque())
-                .isEnflammable(r.isEnflammable())
-                .puissance(r.puissance())
-                .tonnage(r.tonnage())
-                .cylindre(r.cylindre())
-                .nbPlace(r.nbPlace())
-                .numAttestationUuid(r.numAttestationUuid())
-                .valeurANeuve(r.valeurANeuve())
-                .valeurVenale(r.valeurVenale())
-                .insuredUuid(r.insuredUuid())
-                .nomConducteur(r.nomConducteur())
-                .sexeConducteur(parseGender(r.sexeConducteur()))
-                .dateNaissanceConducteur(r.dateNaissanceConducteur())
-                .typePermis(parseLicenseCategory(r.typePermis()))
-                .numPermis(r.numPermis())
-                .dateDelivrancePermis(r.dateDelivrancePermis())
-                .lieuDelivrancePermis(r.lieuDelivrancePermis())
-                .delegationCredit(r.delegationCredit())
-                .zone(r.zone())
+                .isFleetMember(request.isFleetMember())
+                .parentFleetPoliceUuid(request.parentFleetPoliceUuid())
+                .numAvenant(request.numAvenant())
+                .immatriculation(request.immatriculation())
+                .ordre(request.ordre())
+                .marque(request.marque())
+                .modele(request.modele())
+                .productUuid(request.productUuid())
+                .driverName(request.driverName())
+                .driverGender(request.driverGender())
+                .driverBirthDate(request.driverBirthDate())
+                .licenseType(request.licenseType())
+                .licenseNumber(request.licenseNumber())
+                .licenseIssueDate(request.licenseIssueDate())
+                .licenseIssuePlace(request.licenseIssuePlace())
+                .creditDelegation(request.creditDelegation())
+                .zone(request.zone())
+                .vehicleTypeUuid(request.vehicleTypeUuid())
+                .usageUuid(request.usageUuid())
+                .firstRegistrationDate(request.firstRegistrationDate())
+                .energie(request.energie())
+                .chassisNumber(request.chassisNumber())
+                .engineNumber(request.engineNumber())
+                .bodyType(request.bodyType())
+                .hasTurbo(request.hasTurbo())
+                .hasTrailer(request.hasTrailer())
+                .isFlammable(request.isFlammable())
+                .power(request.power())
+                .tonnage(request.tonnage())
+                .cylinder(request.cylinder())
+                .seatCount(request.seatCount())
+                .attestationNumberUuid(request.attestationNumberUuid())
+                .formulaPTUuid(request.formulaPTUuid())
+                .nbPersonsTransported(request.nbPersonsTransported())
+                .maxSpeed(request.maxSpeed())
+                .newValue(request.newValue())
+                .marketValue(request.marketValue())
                 .build();
     }
 
-    public static void applyUpdates(Risk entity, RiskUpdateRequest r) {
-        if (r.immatriculation() != null) entity.setImmatriculation(r.immatriculation());
-        if (r.ordre() != null) entity.setOrdre(r.ordre());
-        if (r.genreUuid() != null) entity.setGenreUuid(r.genreUuid());
-        if (r.usageUuid() != null) entity.setUsageUuid(r.usageUuid());
-        if (r.dateMiseEnCirculation() != null) entity.setDateMiseEnCirculation(r.dateMiseEnCirculation());
-        if (r.energie() != null) entity.setEnergie(parseEnergie(r.energie()));
-        if (r.numChassis() != null) entity.setNumChassis(r.numChassis());
-        if (r.numMoteur() != null) entity.setNumMoteur(r.numMoteur());
-        if (r.typeCarrosserie() != null) entity.setTypeCarrosserie(parseTypeCarrosserie(r.typeCarrosserie()));
-        if (r.hasTurbo() != null) entity.setHasTurbo(r.hasTurbo());
-        if (r.hasRemorque() != null) entity.setHasRemorque(r.hasRemorque());
-        if (r.isEnflammable() != null) entity.setIsEnflammable(r.isEnflammable());
-        if (r.puissance() != null) entity.setPuissance(r.puissance());
-        if (r.tonnage() != null) entity.setTonnage(r.tonnage());
-        if (r.cylindre() != null) entity.setCylindre(r.cylindre());
-        if (r.nbPlace() != null) entity.setNbPlace(r.nbPlace());
-        if (r.numAttestationUuid() != null) entity.setNumAttestationUuid(r.numAttestationUuid());
-        if (r.valeurANeuve() != null) entity.setValeurANeuve(r.valeurANeuve());
-        if (r.valeurVenale() != null) entity.setValeurVenale(r.valeurVenale());
-        if (r.insuredUuid() != null) entity.setInsuredUuid(r.insuredUuid());
-        if (r.nomConducteur() != null) entity.setNomConducteur(r.nomConducteur());
-        if (r.sexeConducteur() != null) entity.setSexeConducteur(parseGender(r.sexeConducteur()));
-        if (r.dateNaissanceConducteur() != null) entity.setDateNaissanceConducteur(r.dateNaissanceConducteur());
-        if (r.typePermis() != null) entity.setTypePermis(parseLicenseCategory(r.typePermis()));
-        if (r.numPermis() != null) entity.setNumPermis(r.numPermis());
-        if (r.dateDelivrancePermis() != null) entity.setDateDelivrancePermis(r.dateDelivrancePermis());
-        if (r.lieuDelivrancePermis() != null) entity.setLieuDelivrancePermis(r.lieuDelivrancePermis());
-        if (r.delegationCredit() != null) entity.setDelegationCredit(r.delegationCredit());
-        if (r.zone() != null) entity.setZone(r.zone());
-    }
+    /**
+     * Converts Risk entity to RiskResponse using builder pattern
+     */
+    public RiskResponse toResponse(Risk entity) {
+        if (entity == null) {
+            return null;
+        }
 
-    public static RiskResponse toResponse(Risk e) {
         return new RiskResponse(
-                e.getUuid(),
-                e.getImmatriculation(),
-                e.getOrdre(),
-                e.getMarque(),
-                e.getModele(),
-                e.getGenreUuid(),
-                e.getUsageUuid(),
-                e.getDateMiseEnCirculation(),
-                e.getEnergie() != null ? e.getEnergie().name() : null,
-                e.getNumChassis(),
-                e.getNumMoteur(),
-                e.getTypeCarrosserie() != null ? e.getTypeCarrosserie().name() : null,
-                e.getHasTurbo(),
-                e.getHasRemorque(),
-                e.getIsEnflammable(),
-                e.getPuissance(),
-                e.getTonnage(),
-                e.getCylindre(),
-                e.getNbPlace(),
-                e.getNumAttestationUuid(),
-                e.getValeurANeuve(),
-                e.getValeurVenale(),
-                e.getInsuredUuid(),
-                e.getNomConducteur(),
-                e.getSexeConducteur() != null ? e.getSexeConducteur().name() : null,
-                e.getDateNaissanceConducteur(),
-                e.getTypePermis() != null ? e.getTypePermis().name() : null,
-                e.getNumPermis(),
-                e.getDateDelivrancePermis(),
-                e.getLieuDelivrancePermis(),
-                e.getDelegationCredit(),
-                e.getZone(),
-                e.getCreatedAt(),
-                e.getUpdatedAt()
+                entity.getId(),
+                entity.getUuid(),
+                entity.getIsFleetMember(),
+                entity.getParentFleetPoliceUuid(),
+                entity.getNumAvenant(),
+                entity.getImmatriculation(),
+                entity.getOrdre(),
+                entity.getMarque(),
+                entity.getModele(),
+                entity.getProductUuid(),
+                entity.getDriverName(),
+                entity.getDriverGender(),
+                entity.getDriverBirthDate(),
+                entity.getLicenseType(),
+                entity.getLicenseNumber(),
+                entity.getLicenseIssueDate(),
+                entity.getLicenseIssuePlace(),
+                entity.getCreditDelegation(),
+                entity.getZone(),
+                entity.getVehicleTypeUuid(),
+                entity.getUsageUuid(),
+                entity.getFirstRegistrationDate(),
+                entity.getEnergie(),
+                entity.getChassisNumber(),
+                entity.getEngineNumber(),
+                entity.getBodyType(),
+                entity.getHasTurbo(),
+                entity.getHasTrailer(),
+                entity.getIsFlammable(),
+                entity.getPower(),
+                entity.getTonnage(),
+                entity.getCylinder(),
+                entity.getSeatCount(),
+                entity.getAttestationNumberUuid(),
+                entity.getFormulaPTUuid(),
+                entity.getNbPersonsTransported(),
+                entity.getMaxSpeed(),
+                entity.getNewValue(),
+                entity.getMarketValue(),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt()
         );
     }
 
-    private static Energie parseEnergie(String s) {
-        if (s == null) return null;
-        return Energie.valueOf(s.trim().toUpperCase());
+    /**
+     * Converts Risk entity to RiskViewResponse with nested relationships
+     */
+    public RiskViewResponse toViewResponse(Risk entity) {
+        if (entity == null) {
+            return null;
+        }
+
+        return new RiskViewResponse(
+                entity.getId(),
+                entity.getUuid(),
+                entity.getIsFleetMember(),
+                entity.getParentFleetPoliceUuid(),
+                entity.getNumAvenant(),
+                entity.getImmatriculation(),
+                entity.getOrdre(),
+                entity.getMarque(),
+                entity.getModele(),
+                entity.getProductUuid(),
+                // Nested insured information
+                entity.getInsured() != null ? insuredMapper.toResponse(entity.getInsured()) : null,
+                // Driver entries list
+                entity.getDriverEntries() != null ?
+                        entity.getDriverEntries().stream()
+                                .map(riskDriverEntryMapper::toResponse)
+                                .collect(Collectors.toList()) : Collections.emptyList(),
+                entity.getDriverName(),
+                entity.getDriverGender(),
+                entity.getDriverBirthDate(),
+                entity.getLicenseType(),
+                entity.getLicenseNumber(),
+                entity.getLicenseIssueDate(),
+                entity.getLicenseIssuePlace(),
+                entity.getCreditDelegation(),
+                entity.getZone(),
+                entity.getVehicleTypeUuid(),
+                entity.getUsageUuid(),
+                entity.getFirstRegistrationDate(),
+                entity.getEnergie(),
+                entity.getChassisNumber(),
+                entity.getEngineNumber(),
+                entity.getBodyType(),
+                entity.getHasTurbo(),
+                entity.getHasTrailer(),
+                entity.getIsFlammable(),
+                entity.getPower(),
+                entity.getTonnage(),
+                entity.getCylinder(),
+                entity.getSeatCount(),
+                entity.getAttestationNumberUuid(),
+                entity.getFormulaPTUuid(),
+                entity.getNbPersonsTransported(),
+                entity.getMaxSpeed(),
+                entity.getNewValue(),
+                entity.getMarketValue(),
+                // Primes garanties list
+                entity.getPrimesGaranties() != null ?
+                        entity.getPrimesGaranties().stream()
+                                .map(primeGarantieMapper::toResponse)
+                                .collect(Collectors.toList()) : Collections.emptyList(),
+                entity.getCreatedAt(),
+                entity.getUpdatedAt()
+        );
     }
 
-    private static TypeCarrosserie parseTypeCarrosserie(String s) {
-        if (s == null) return null;
-        return TypeCarrosserie.valueOf(s.trim().toUpperCase());
-    }
+    /**
+     * Updates existing Risk entity with data from RiskUpdateRequest
+     * Only updates non-null fields from the request
+     */
+    public void updateEntity(Risk entity, RiskUpdateRequest request) {
+        if (entity == null || request == null) {
+            return;
+        }
 
-    private static Gender parseGender(String s) {
-        if (s == null) return null;
-        return Gender.valueOf(s.trim().toUpperCase());
-    }
-
-    private static LicenseCategory parseLicenseCategory(String s) {
-        if (s == null) return null;
-        return LicenseCategory.valueOf(s.trim().toUpperCase());
+        if (request.isFleetMember() != null) {
+            entity.setIsFleetMember(request.isFleetMember());
+        }
+        if (request.parentFleetPoliceUuid() != null) {
+            entity.setParentFleetPoliceUuid(request.parentFleetPoliceUuid());
+        }
+        if (request.numAvenant() != null) {
+            entity.setNumAvenant(request.numAvenant());
+        }
+        if (request.immatriculation() != null) {
+            entity.setImmatriculation(request.immatriculation());
+        }
+        if (request.ordre() != null) {
+            entity.setOrdre(request.ordre());
+        }
+        if (request.marque() != null) {
+            entity.setMarque(request.marque());
+        }
+        if (request.modele() != null) {
+            entity.setModele(request.modele());
+        }
+        if (request.productUuid() != null) {
+            entity.setProductUuid(request.productUuid());
+        }
+        if (request.driverName() != null) {
+            entity.setDriverName(request.driverName());
+        }
+        if (request.driverGender() != null) {
+            entity.setDriverGender(request.driverGender());
+        }
+        if (request.driverBirthDate() != null) {
+            entity.setDriverBirthDate(request.driverBirthDate());
+        }
+        if (request.licenseType() != null) {
+            entity.setLicenseType(request.licenseType());
+        }
+        if (request.licenseNumber() != null) {
+            entity.setLicenseNumber(request.licenseNumber());
+        }
+        if (request.licenseIssueDate() != null) {
+            entity.setLicenseIssueDate(request.licenseIssueDate());
+        }
+        if (request.licenseIssuePlace() != null) {
+            entity.setLicenseIssuePlace(request.licenseIssuePlace());
+        }
+        if (request.creditDelegation() != null) {
+            entity.setCreditDelegation(request.creditDelegation());
+        }
+        if (request.zone() != null) {
+            entity.setZone(request.zone());
+        }
+        if (request.vehicleTypeUuid() != null) {
+            entity.setVehicleTypeUuid(request.vehicleTypeUuid());
+        }
+        if (request.usageUuid() != null) {
+            entity.setUsageUuid(request.usageUuid());
+        }
+        if (request.firstRegistrationDate() != null) {
+            entity.setFirstRegistrationDate(request.firstRegistrationDate());
+        }
+        if (request.energie() != null) {
+            entity.setEnergie(request.energie());
+        }
+        if (request.chassisNumber() != null) {
+            entity.setChassisNumber(request.chassisNumber());
+        }
+        if (request.engineNumber() != null) {
+            entity.setEngineNumber(request.engineNumber());
+        }
+        if (request.bodyType() != null) {
+            entity.setBodyType(request.bodyType());
+        }
+        if (request.hasTurbo() != null) {
+            entity.setHasTurbo(request.hasTurbo());
+        }
+        if (request.hasTrailer() != null) {
+            entity.setHasTrailer(request.hasTrailer());
+        }
+        if (request.isFlammable() != null) {
+            entity.setIsFlammable(request.isFlammable());
+        }
+        if (request.power() != null) {
+            entity.setPower(request.power());
+        }
+        if (request.tonnage() != null) {
+            entity.setTonnage(request.tonnage());
+        }
+        if (request.cylinder() != null) {
+            entity.setCylinder(request.cylinder());
+        }
+        if (request.seatCount() != null) {
+            entity.setSeatCount(request.seatCount());
+        }
+        if (request.attestationNumberUuid() != null) {
+            entity.setAttestationNumberUuid(request.attestationNumberUuid());
+        }
+        if (request.formulaPTUuid() != null) {
+            entity.setFormulaPTUuid(request.formulaPTUuid());
+        }
+        if (request.nbPersonsTransported() != null) {
+            entity.setNbPersonsTransported(request.nbPersonsTransported());
+        }
+        if (request.maxSpeed() != null) {
+            entity.setMaxSpeed(request.maxSpeed());
+        }
+        if (request.newValue() != null) {
+            entity.setNewValue(request.newValue());
+        }
+        if (request.marketValue() != null) {
+            entity.setMarketValue(request.marketValue());
+        }
     }
 }
-

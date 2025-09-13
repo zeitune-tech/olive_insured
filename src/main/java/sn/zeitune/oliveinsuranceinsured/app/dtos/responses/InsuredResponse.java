@@ -1,29 +1,32 @@
 package sn.zeitune.oliveinsuranceinsured.app.dtos.responses;
 
-import lombok.Builder;
+import sn.zeitune.oliveinsuranceinsured.enums.Civilite;
+import sn.zeitune.oliveinsuranceinsured.enums.TypePiece;
+
 import java.time.Instant;
 import java.time.LocalDate;
 import java.util.UUID;
 
-@Builder
 public record InsuredResponse(
+        Long id,
         UUID uuid,
-        String civilite,
-        String nom,
-        String prenom,
-        LocalDate dateNaissance,
-        String typePiece,
-        String numeroPiece,
-        String adresse,
-        String ville,
-        String email,
-        String phoneFixe,
-        String phoneMobile,
+        Civilite civility,
+        String lastName,
+        String firstName,
+        LocalDate birthDate,
+        TypePiece idDocumentType,
+        String idDocumentNumber,
+        String address,
+        String city,
         String profession,
-        String activite,
-        String nomEntreprise,
-        String patente,
-        String registreDeCommerce,
+        String activity,
+        String email,
+        String landlinePhone,
+        String mobilePhone,
+        String companyName,
+        String businessLicense,
+        String tradeRegister,
         Instant createdAt,
         Instant updatedAt
-) {}
+) {
+}

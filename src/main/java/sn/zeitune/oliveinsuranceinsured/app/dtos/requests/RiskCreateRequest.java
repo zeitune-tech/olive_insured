@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
 
-public record RiskCreateRequest(
+public record  RiskCreateRequest(
         Boolean isFleetMember,
 
         UUID parentFleetPoliceUuid,
@@ -31,6 +31,9 @@ public record RiskCreateRequest(
 
         @NotNull(message = "Product UUID is required")
         UUID productUuid,
+
+        @NotNull(message = "Insured UUID is required")
+        UUID insuredUuid,
 
         @Size(max = 150, message = "Driver name must not exceed 150 characters")
         String driverName,

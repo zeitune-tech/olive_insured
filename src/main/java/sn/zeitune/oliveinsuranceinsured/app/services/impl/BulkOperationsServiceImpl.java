@@ -11,6 +11,10 @@ import sn.zeitune.oliveinsuranceinsured.app.dtos.responses.BulkRiskInsuredRespon
 import sn.zeitune.oliveinsuranceinsured.app.dtos.responses.InsuredResponse;
 import sn.zeitune.oliveinsuranceinsured.app.dtos.responses.PrimeGarantieResponse;
 import sn.zeitune.oliveinsuranceinsured.app.dtos.responses.RiskResponse;
+import sn.zeitune.oliveinsuranceinsured.app.entities.Insured;
+import sn.zeitune.oliveinsuranceinsured.app.entities.Risk;
+import sn.zeitune.oliveinsuranceinsured.app.repositories.InsuredRepository;
+import sn.zeitune.oliveinsuranceinsured.app.repositories.RiskRepository;
 import sn.zeitune.oliveinsuranceinsured.app.services.BulkOperationsService;
 import sn.zeitune.oliveinsuranceinsured.app.services.InsuredService;
 import sn.zeitune.oliveinsuranceinsured.app.services.PrimeGarantieService;
@@ -18,6 +22,7 @@ import sn.zeitune.oliveinsuranceinsured.app.services.RiskService;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +33,8 @@ public class BulkOperationsServiceImpl implements BulkOperationsService {
     private final InsuredService insuredService;
     private final RiskService riskService;
     private final PrimeGarantieService primeGarantieService;
+    private final RiskRepository riskRepository;
+    private final InsuredRepository insuredRepository;
 
     @Override
     public BulkRiskInsuredResponse createRiskWithInsuredAndGuarantees(BulkRiskInsuredCreateRequest request) {
@@ -37,7 +44,7 @@ public class BulkOperationsServiceImpl implements BulkOperationsService {
         InsuredResponse insuredResponse = insuredService.create(request.insured());
         log.debug("Created insured with UUID: {}", insuredResponse.uuid());
 
-        // 2. Create risk request with the created insured's UUID
+        // 2. Create a risk request with the created insured's UUID
         RiskCreateRequest riskRequest = new RiskCreateRequest(
                 request.risk().isFleetMember(),
                 request.risk().parentFleetPoliceUuid(),
@@ -47,6 +54,7 @@ public class BulkOperationsServiceImpl implements BulkOperationsService {
                 request.risk().marque(),
                 request.risk().modele(),
                 request.risk().productUuid(),
+                request.risk().insuredUuid(),
                 request.risk().driverName(),
                 request.risk().driverGender(),
                 request.risk().driverBirthDate(),
@@ -115,6 +123,14 @@ public class BulkOperationsServiceImpl implements BulkOperationsService {
 
         log.info("Successfully created bulk risk-insured-guarantees - Risk UUID: {}, Insured UUID: {}",
                 riskResponse.uuid(), insuredResponse.uuid());
+
+        Optional<Risk> risk = riskRepository.findByUuid(riskResponse.uuid());
+        Optional<Insured> insured = insuredRepository.findByUuid(insuredResponse.uuid());
+
+        if(risk.isPresent() && insured.isPresent()){
+            risk.get().setInsured(insured.get());
+            riskRepository.save(risk.get());
+        }
 
         return new BulkRiskInsuredResponse(
                 insuredResponse,

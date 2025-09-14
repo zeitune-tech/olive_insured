@@ -7,6 +7,7 @@ import sn.zeitune.oliveinsuranceinsured.enums.TypePiece;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Getter
@@ -74,6 +75,9 @@ public class Insured {
     private String businessLicense;
     @Column(name = "trade_register")
     private String tradeRegister;
+
+    @OneToMany(mappedBy = "insured", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Risk> risks;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;

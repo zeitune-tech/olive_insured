@@ -21,6 +21,7 @@ public record RiskResponse(
         String marque,
         String modele,
         UUID productUuid,
+        UUID insuredUuid,
         String driverName,
         Gender driverGender,
         LocalDate driverBirthDate,
@@ -52,6 +53,7 @@ public record RiskResponse(
         BigDecimal newValue,
         BigDecimal marketValue,
         Instant createdAt,
-        Instant updatedAt
+        Instant updatedAt,
+        sn.zeitune.oliveinsuranceinsured.app.entities.Insured insuredResponse
 ) {
 }

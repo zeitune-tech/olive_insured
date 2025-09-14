@@ -9,7 +9,6 @@ import sn.zeitune.oliveinsuranceinsured.app.dtos.responses.RiskViewResponse;
 import sn.zeitune.oliveinsuranceinsured.app.entities.Risk;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -93,6 +92,7 @@ public class RiskMapper {
                 entity.getMarque(),
                 entity.getModele(),
                 entity.getProductUuid(),
+                entity.getInsured() != null ? entity.getInsured().getUuid() : null,
                 entity.getDriverName(),
                 entity.getDriverGender(),
                 entity.getDriverBirthDate(),
@@ -124,7 +124,8 @@ public class RiskMapper {
                 entity.getNewValue(),
                 entity.getMarketValue(),
                 entity.getCreatedAt(),
-                entity.getUpdatedAt()
+                entity.getUpdatedAt(),
+                entity.getInsured()
         );
     }
 

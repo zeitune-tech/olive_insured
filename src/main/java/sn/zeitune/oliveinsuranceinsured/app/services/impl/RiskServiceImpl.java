@@ -15,6 +15,7 @@ import sn.zeitune.oliveinsuranceinsured.app.entities.Risk;
 import sn.zeitune.oliveinsuranceinsured.app.exceptions.BusinessException;
 import sn.zeitune.oliveinsuranceinsured.app.exceptions.NotFoundException;
 import sn.zeitune.oliveinsuranceinsured.app.mappers.RiskMapper;
+import sn.zeitune.oliveinsuranceinsured.app.repositories.InsuredRepository;
 import sn.zeitune.oliveinsuranceinsured.app.repositories.RiskRepository;
 import sn.zeitune.oliveinsuranceinsured.app.services.RiskService;
 
@@ -30,12 +31,20 @@ public class RiskServiceImpl implements RiskService {
     private final RiskMapper riskMapper;
     private final SettingsClient settingsClient;
     private final AttestationClient attestationClient;
+    private final InsuredRepository insuredRepository;
 
     @Override
     public RiskResponse create(RiskCreateRequest request) {
         validateRefs(request);
 
         Risk entity = riskMapper.toEntity(request);
+
+        // Establish a relationship with Insured
+        if (request.insuredUuid() != null) {
+            var insured = insuredRepository.findByUuid(request.insuredUuid())
+                    .orElseThrow(() -> new NotFoundException("Insured not found: " + request.insuredUuid()));
+            entity.setInsured(insured);
+        }
 
         // Resolve and copy labels
         if (request.marque() != null) {
@@ -78,6 +87,13 @@ public class RiskServiceImpl implements RiskService {
         // Apply updates using mapper
         riskMapper.updateEntity(entity, request);
 
+        // Update relationship with Insured if provided
+        if (request.insuredUuid() != null) {
+            var insured = insuredRepository.findByUuid(request.insuredUuid())
+                    .orElseThrow(() -> new NotFoundException("Insured not found: " + request.insuredUuid()));
+            entity.setInsured(insured);
+        }
+
         // Resolve labels if brand/model references are provided
         if (request.marque() != null) {
             entity.setMarque(resolveBrandLabel(request.marque()));
@@ -102,7 +118,7 @@ public class RiskServiceImpl implements RiskService {
         Risk entity = repository.findByUuid(uuid)
                 .orElseThrow(() -> new NotFoundException("Risk not found: " + uuid));
 
-        // Use the mapper's toViewResponse method which handles nested relationships
+        // Use the mapper's toViewResponse method, which handles nested relationships
         return riskMapper.toViewResponse(entity);
     }
 

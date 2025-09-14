@@ -30,6 +30,8 @@ public record RiskUpdateRequest(
 
         UUID productUuid,
 
+        UUID insuredUuid,
+
         @Size(max = 150, message = "Driver name must not exceed 150 characters")
         String driverName,
 

@@ -64,7 +64,7 @@ public class Risk {
 
     // Relation JPA avec l'assuré (même microservice)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "insured_uuid", referencedColumnName = "uuid", insertable = false, updatable = false)
+    @JoinColumn(name = "insured_uuid", referencedColumnName = "uuid")
     private Insured insured;
 
     @OneToMany(mappedBy = "risk", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

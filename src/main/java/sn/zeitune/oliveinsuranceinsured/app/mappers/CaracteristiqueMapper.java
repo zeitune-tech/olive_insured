@@ -26,24 +26,13 @@ public class CaracteristiqueMapper {
         }
         String normalized = type.trim().toUpperCase();
 
-        Caracteristique entity;
-        switch (normalized) {
-            case "TEXTE":
-            case "TEXT":
-                entity = new CaracteristiqueTexte();
-                break;
-            case "NUMERIQUE":
-            case "NUMBER":
-                entity = new CaracteristiqueNumerique();
-                break;
-            case "LISTE":
-            case "SELECT":
-            case "MULTI_SELECT":
-                entity = new CaracteristiqueListe();
-                break;
-            default:
-                throw new IllegalArgumentException("Type de caractéristique inconnu: " + request.typeCaracteristique());
-        }
+        Caracteristique entity = switch (normalized) {
+            case "TEXTE", "TEXT" -> new CaracteristiqueTexte();
+            case "NUMERIQUE", "NUMBER" -> new CaracteristiqueNumerique();
+            case "LISTE", "SELECT", "MULTI_SELECT" -> new CaracteristiqueListe();
+            default ->
+                    throw new IllegalArgumentException("Type de caractéristique inconnu: " + request.typeCaracteristique());
+        };
 
         // Map common fields
         entity.setNom(request.nom());

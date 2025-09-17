@@ -30,15 +30,13 @@ public class CaracteristiqueListe extends Caracteristique {
             return !Boolean.TRUE.equals(getObligatoire());
         }
         
-        if (valeur instanceof String) {
-            String strValue = (String) valeur;
+        if (valeur instanceof String strValue) {
             return options.stream()
                     .filter(opt -> Boolean.TRUE.equals(opt.getActif()))
                     .anyMatch(opt -> opt.getValeur().equals(strValue));
         }
         
-        if (Boolean.TRUE.equals(selectionMultiple) && valeur instanceof List) {
-            List<?> values = (List<?>) valeur;
+        if (Boolean.TRUE.equals(selectionMultiple) && valeur instanceof List<?> values) {
             if (values.isEmpty()) {
                 return !Boolean.TRUE.equals(getObligatoire());
             }

@@ -33,8 +33,6 @@ public class BulkOperationsServiceImpl implements BulkOperationsService {
     private final InsuredService insuredService;
     private final RiskService riskService;
     private final PrimeGarantieService primeGarantieService;
-    private final RiskRepository riskRepository;
-    private final InsuredRepository insuredRepository;
 
     @Override
     public BulkRiskInsuredResponse createRiskWithInsuredAndGuarantees(BulkRiskInsuredCreateRequest request) {
@@ -44,48 +42,8 @@ public class BulkOperationsServiceImpl implements BulkOperationsService {
         InsuredResponse insuredResponse = insuredService.create(request.insured());
         log.debug("Created insured with UUID: {}", insuredResponse.uuid());
 
-        // 2. Create a risk request with the created insured's UUID
-        RiskCreateRequest riskRequest = new RiskCreateRequest(
-                request.risk().isFleetMember(),
-                request.risk().parentFleetPoliceUuid(),
-                request.risk().numAvenant(),
-                request.risk().immatriculation(),
-                request.risk().ordre(),
-                request.risk().marque(),
-                request.risk().modele(),
-                request.risk().productUuid(),
-                request.risk().insuredUuid(),
-                request.risk().driverName(),
-                request.risk().driverGender(),
-                request.risk().driverBirthDate(),
-                request.risk().licenseType(),
-                request.risk().licenseNumber(),
-                request.risk().licenseIssueDate(),
-                request.risk().licenseIssuePlace(),
-                request.risk().creditDelegation(),
-                request.risk().zone(),
-                request.risk().vehicleTypeUuid(),
-                request.risk().genreUuid(),
-                request.risk().usageUuid(),
-                request.risk().firstRegistrationDate(),
-                request.risk().energie(),
-                request.risk().chassisNumber(),
-                request.risk().engineNumber(),
-                request.risk().bodyType(),
-                request.risk().hasTurbo(),
-                request.risk().hasTrailer(),
-                request.risk().isFlammable(),
-                request.risk().power(),
-                request.risk().tonnage(),
-                request.risk().cylinder(),
-                request.risk().seatCount(),
-                request.risk().attestationNumberUuid(),
-                request.risk().formulaPTUuid(),
-                request.risk().nbPersonsTransported(),
-                request.risk().maxSpeed(),
-                request.risk().newValue(),
-                request.risk().marketValue()
-        );
+        // 2. Use the risk request from the bulk request (preserves attributes and all fields)
+        RiskCreateRequest riskRequest = request.risk();
 
         // 3. Create the risk
         RiskResponse riskResponse = riskService.create(riskRequest);
@@ -123,14 +81,6 @@ public class BulkOperationsServiceImpl implements BulkOperationsService {
 
         log.info("Successfully created bulk risk-insured-guarantees - Risk UUID: {}, Insured UUID: {}",
                 riskResponse.uuid(), insuredResponse.uuid());
-
-        Optional<Risk> risk = riskRepository.findByUuid(riskResponse.uuid());
-        Optional<Insured> insured = insuredRepository.findByUuid(insuredResponse.uuid());
-
-        if(risk.isPresent() && insured.isPresent()){
-            risk.get().setInsured(insured.get());
-            riskRepository.save(risk.get());
-        }
 
         return new BulkRiskInsuredResponse(
                 insuredResponse,

@@ -68,8 +68,4 @@ public class RiskInterserviceController {
         return ResponseEntity.ok(service.findByUuids(uuids));
     }
 
-    @GetMapping("/by-insured/{insuredUuid}")
-    public ResponseEntity<List<RiskResponse>> findByInsuredUuid(@PathVariable UUID insuredUuid) {
-        return ResponseEntity.ok(service.findByInsuredUuid(insuredUuid));
-    }
 }

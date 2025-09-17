@@ -1,6 +1,7 @@
 package sn.zeitune.oliveinsuranceinsured.app.dtos.requests;
 
 import jakarta.validation.constraints.*;
+import jakarta.validation.Valid;
 import sn.zeitune.oliveinsuranceinsured.enums.Energie;
 import sn.zeitune.oliveinsuranceinsured.enums.Gender;
 import sn.zeitune.oliveinsuranceinsured.enums.LicenseCategory;
@@ -8,9 +9,10 @@ import sn.zeitune.oliveinsuranceinsured.enums.TypeCarrosserie;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
-public record  RiskCreateRequest(
+public record RiskCreateRequest(
         Boolean isFleetMember,
 
         UUID parentFleetPoliceUuid,
@@ -32,8 +34,20 @@ public record  RiskCreateRequest(
         @NotNull(message = "Product UUID is required")
         UUID productUuid,
 
-        @NotNull(message = "Insured UUID is required")
-        UUID insuredUuid,
+        @Size(max = 100, message = "Insured first name must not exceed 100 characters")
+        String insuredFirstName,
+
+        @Size(max = 100, message = "Insured last name must not exceed 100 characters")
+        String insuredLastName,
+
+        @Size(max = 200, message = "Insured address must not exceed 200 characters")
+        String insuredAddress,
+
+        @Size(max = 20, message = "Insured phone must not exceed 20 characters")
+        String insuredPhone,
+
+        @Valid
+        List<ValeurCaracteristiqueRiskCreateRequest> attributes,
 
         @Size(max = 150, message = "Driver name must not exceed 150 characters")
         String driverName,

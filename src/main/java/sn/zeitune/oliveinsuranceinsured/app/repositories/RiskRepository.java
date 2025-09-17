@@ -14,6 +14,5 @@ public interface RiskRepository extends JpaRepository<Risk, Long> {
     Optional<Risk> findByImmatriculation(String immatriculation);
     Page<Risk> findAllByImmatriculationContainingIgnoreCase(String immatriculation, Pageable pageable);
     List<Risk> findByUuidIn(List<UUID> uuids);
-    List<Risk> findByInsuredUuid(UUID insuredUuid);
 }
 

@@ -8,6 +8,7 @@ import sn.zeitune.oliveinsuranceinsured.enums.TypeCarrosserie;
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 public record RiskResponse(
@@ -21,7 +22,11 @@ public record RiskResponse(
         String marque,
         String modele,
         UUID productUuid,
-        UUID insuredUuid,
+        String insuredFirstName,
+        String insuredLastName,
+        String insuredAddress,
+        String insuredPhone,
+        List<ValeurCaracteristiqueRiskResponse> attributes,
         String driverName,
         Gender driverGender,
         LocalDate driverBirthDate,
@@ -53,7 +58,6 @@ public record RiskResponse(
         BigDecimal newValue,
         BigDecimal marketValue,
         Instant createdAt,
-        Instant updatedAt,
-        sn.zeitune.oliveinsuranceinsured.app.entities.Insured insuredResponse
+        Instant updatedAt
 ) {
 }

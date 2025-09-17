@@ -5,20 +5,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import sn.zeitune.oliveinsuranceinsured.app.clients.AttestationClient;
 import sn.zeitune.oliveinsuranceinsured.app.clients.SettingsClient;
 import sn.zeitune.oliveinsuranceinsured.app.dtos.requests.RiskCreateRequest;
 import sn.zeitune.oliveinsuranceinsured.app.dtos.requests.RiskUpdateRequest;
+import sn.zeitune.oliveinsuranceinsured.app.dtos.requests.ValeurCaracteristiqueRiskCreateRequest;
 import sn.zeitune.oliveinsuranceinsured.app.dtos.responses.RiskResponse;
 import sn.zeitune.oliveinsuranceinsured.app.dtos.responses.RiskViewResponse;
 import sn.zeitune.oliveinsuranceinsured.app.entities.Risk;
+import sn.zeitune.oliveinsuranceinsured.app.entities.attributes.ValeurCaracteristiqueRisk;
 import sn.zeitune.oliveinsuranceinsured.app.exceptions.BusinessException;
 import sn.zeitune.oliveinsuranceinsured.app.exceptions.NotFoundException;
 import sn.zeitune.oliveinsuranceinsured.app.mappers.RiskMapper;
-import sn.zeitune.oliveinsuranceinsured.app.repositories.InsuredRepository;
+import sn.zeitune.oliveinsuranceinsured.app.repositories.CaracteristiqueRepository;
 import sn.zeitune.oliveinsuranceinsured.app.repositories.RiskRepository;
+import sn.zeitune.oliveinsuranceinsured.app.repositories.ValeurCaracteristiquePoliceRepository;
 import sn.zeitune.oliveinsuranceinsured.app.services.RiskService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,8 +33,8 @@ public class RiskServiceImpl implements RiskService {
     private final RiskRepository repository;
     private final RiskMapper riskMapper;
     private final SettingsClient settingsClient;
-    private final AttestationClient attestationClient;
-    private final InsuredRepository insuredRepository;
+    private final ValeurCaracteristiquePoliceRepository valeurCaracteristiquePoliceRepository;
+    private final CaracteristiqueRepository caracteristiqueRepository;
 
     @Override
     public RiskResponse create(RiskCreateRequest request) {
@@ -39,14 +42,6 @@ public class RiskServiceImpl implements RiskService {
 
         Risk entity = riskMapper.toEntity(request);
 
-        // Establish a relationship with Insured
-        if (request.insuredUuid() != null) {
-            var insured = insuredRepository.findByUuid(request.insuredUuid())
-                    .orElseThrow(() -> new NotFoundException("Insured not found: " + request.insuredUuid()));
-            entity.setInsured(insured);
-        }
-
-        // Resolve and copy labels
         if (request.marque() != null) {
             entity.setMarque(resolveBrandLabel(request.marque()));
         }
@@ -55,6 +50,11 @@ public class RiskServiceImpl implements RiskService {
         }
 
         entity = repository.save(entity);
+
+        if (request.attributes() != null && !request.attributes().isEmpty()) {
+            manageAttributes(entity, request.attributes());
+        }
+
         return riskMapper.toResponse(entity);
     }
 
@@ -79,27 +79,26 @@ public class RiskServiceImpl implements RiskService {
         Risk entity = repository.findByUuid(uuid)
                 .orElseThrow(() -> new NotFoundException("Risk not found: " + uuid));
 
-        // Simple validation for basic fields
         if (request.seatCount() != null && request.seatCount() <= 0) {
             throw new BusinessException("Nombre de places doit être > 0");
         }
 
-        // Apply updates using mapper
         riskMapper.updateEntity(entity, request);
 
-        // Update relationship with Insured if provided
-        if (request.insuredUuid() != null) {
-            var insured = insuredRepository.findByUuid(request.insuredUuid())
-                    .orElseThrow(() -> new NotFoundException("Insured not found: " + request.insuredUuid()));
-            entity.setInsured(insured);
-        }
-
-        // Resolve labels if brand/model references are provided
         if (request.marque() != null) {
             entity.setMarque(resolveBrandLabel(request.marque()));
         }
         if (request.modele() != null) {
             entity.setModele(resolveModelLabel(entity.getMarque(), request.modele()));
+        }
+
+        if (request.attributes() != null) {
+            valeurCaracteristiquePoliceRepository.deleteAll(entity.getAttributes());
+            entity.getAttributes().clear();
+
+            if (!request.attributes().isEmpty()) {
+                manageAttributes(entity, request.attributes());
+            }
         }
 
         entity = repository.save(entity);
@@ -118,7 +117,6 @@ public class RiskServiceImpl implements RiskService {
         Risk entity = repository.findByUuid(uuid)
                 .orElseThrow(() -> new NotFoundException("Risk not found: " + uuid));
 
-        // Use the mapper's toViewResponse method, which handles nested relationships
         return riskMapper.toViewResponse(entity);
     }
 
@@ -129,24 +127,7 @@ public class RiskServiceImpl implements RiskService {
                 .toList();
     }
 
-    @Override
-    public List<RiskResponse> findByInsuredUuid(UUID insuredUuid) {
-        return repository.findByInsuredUuid(insuredUuid).stream()
-                .map(riskMapper::toResponse)
-                .toList();
-    }
-
     private void validateRefs(RiskCreateRequest request) {
-        // Uncomment when ready to validate external references
-        /*
-        if (request.vehicleTypeUuid() != null && settingsClient.getVehicleType(request.vehicleTypeUuid()).isEmpty())
-            throw new BusinessException("Type véhicule introuvable: " + request.vehicleTypeUuid());
-        if (request.usageUuid() != null && settingsClient.getUsage(request.usageUuid()).isEmpty())
-            throw new BusinessException("Usage introuvable: " + request.usageUuid());
-        if (request.attestationNumberUuid() != null && attestationClient.get(request.attestationNumberUuid()).isEmpty())
-            throw new BusinessException("Attestation introuvable: " + request.attestationNumberUuid());
-        */
-
         if (request.seatCount() != null && request.seatCount() <= 0) {
             throw new BusinessException("Nombre de places doit être > 0");
         }
@@ -162,10 +143,49 @@ public class RiskServiceImpl implements RiskService {
 
     private String resolveModelLabel(String brandLabel, String ref) {
         if (ref == null || ref.isBlank()) return null;
-        // If brand is known, try scoped model search, else fallback
         var models = settingsClient.searchModels(brandLabel != null ? brandLabel : "", ref);
         return models.stream().findFirst()
                 .map(SettingsClient.ModelDto::libelle)
                 .orElseThrow(() -> new BusinessException("Modèle inconnu: " + ref));
+    }
+
+    private void manageAttributes(Risk risk, List<ValeurCaracteristiqueRiskCreateRequest> attributeRequests) {
+        validateAttributes(attributeRequests);
+
+        List<ValeurCaracteristiqueRisk> attributes = new ArrayList<>();
+        for (ValeurCaracteristiqueRiskCreateRequest attrRequest : attributeRequests) {
+            var caracteristique = caracteristiqueRepository.findByUuid(attrRequest.caracteristiqueUuid())
+                    .orElseThrow(() -> new BusinessException("Caractéristique inconnue: " + attrRequest.caracteristiqueUuid()));
+
+            if (!caracteristique.validerValeur(attrRequest.valeur())) {
+                throw new BusinessException("Valeur invalide pour la caractéristique " + caracteristique.getNom() + ": " + attrRequest.valeur());
+            }
+
+            ValeurCaracteristiqueRisk attribute = new ValeurCaracteristiqueRisk();
+            attribute.setRisk(risk);
+            attribute.setCaracteristique(caracteristique);
+            attribute.setValeur(attrRequest.valeur());
+            attribute.setEntiteAssocieeUuid(attrRequest.entiteAssocieeUuid());
+
+            attributes.add(attribute);
+        }
+
+        valeurCaracteristiquePoliceRepository.saveAll(attributes);
+        risk.setAttributes(attributes);
+    }
+
+    private void validateAttributes(List<ValeurCaracteristiqueRiskCreateRequest> attributeRequests) {
+        if (attributeRequests == null) {
+            return;
+        }
+
+        for (ValeurCaracteristiqueRiskCreateRequest request : attributeRequests) {
+            if (request.caracteristiqueUuid() == null) {
+                throw new BusinessException("UUID de caractéristique requis");
+            }
+            if (request.valeur() == null || request.valeur().isBlank()) {
+                throw new BusinessException("Valeur de caractéristique requise");
+            }
+        }
     }
 }

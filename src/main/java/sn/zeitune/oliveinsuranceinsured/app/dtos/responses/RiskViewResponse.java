@@ -24,7 +24,11 @@ public record RiskViewResponse(
         UUID productUuid,
 
         // Nested insured information
-        InsuredResponse insured,
+        String insuredFirstName,
+        String insuredLastName,
+        String insuredAddress,
+        String insuredPhone,
+        List<ValeurCaracteristiqueRiskResponse> attributes,
 
         // Driver entries list
         List<RiskDriverEntryResponse> driverEntries,

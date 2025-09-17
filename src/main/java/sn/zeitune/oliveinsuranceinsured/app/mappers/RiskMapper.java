@@ -23,6 +23,9 @@ public class RiskMapper {
     @Autowired
     private PrimeGarantieMapper primeGarantieMapper;
 
+    @Autowired
+    private ValeurCaracteristiqueRiskMapper valeurCaracteristiqueRiskMapper;
+
     /**
      * Converts RiskCreateRequest to Risk entity using builder pattern
      */
@@ -40,6 +43,10 @@ public class RiskMapper {
                 .marque(request.marque())
                 .modele(request.modele())
                 .productUuid(request.productUuid())
+                .insuredFirstName(request.insuredFirstName())
+                .insuredLastName(request.insuredLastName())
+                .insuredAddress(request.insuredAddress())
+                .insuredPhone(request.insuredPhone())
                 .driverName(request.driverName())
                 .driverGender(request.driverGender())
                 .driverBirthDate(request.driverBirthDate())
@@ -92,68 +99,13 @@ public class RiskMapper {
                 entity.getMarque(),
                 entity.getModele(),
                 entity.getProductUuid(),
-                entity.getInsured() != null ? entity.getInsured().getUuid() : null,
-                entity.getDriverName(),
-                entity.getDriverGender(),
-                entity.getDriverBirthDate(),
-                entity.getLicenseType(),
-                entity.getLicenseNumber(),
-                entity.getLicenseIssueDate(),
-                entity.getLicenseIssuePlace(),
-                entity.getCreditDelegation(),
-                entity.getZone(),
-                entity.getVehicleTypeUuid(),
-                entity.getGenreUuid(),
-                entity.getUsageUuid(),
-                entity.getFirstRegistrationDate(),
-                entity.getEnergie(),
-                entity.getChassisNumber(),
-                entity.getEngineNumber(),
-                entity.getBodyType(),
-                entity.getHasTurbo(),
-                entity.getHasTrailer(),
-                entity.getIsFlammable(),
-                entity.getPower(),
-                entity.getTonnage(),
-                entity.getCylinder(),
-                entity.getSeatCount(),
-                entity.getAttestationNumberUuid(),
-                entity.getFormulaPTUuid(),
-                entity.getNbPersonsTransported(),
-                entity.getMaxSpeed(),
-                entity.getNewValue(),
-                entity.getMarketValue(),
-                entity.getCreatedAt(),
-                entity.getUpdatedAt(),
-                entity.getInsured()
-        );
-    }
-
-    /**
-     * Converts Risk entity to RiskViewResponse with nested relationships
-     */
-    public RiskViewResponse toViewResponse(Risk entity) {
-        if (entity == null) {
-            return null;
-        }
-
-        return new RiskViewResponse(
-                entity.getId(),
-                entity.getUuid(),
-                entity.getIsFleetMember(),
-                entity.getParentFleetPoliceUuid(),
-                entity.getNumAvenant(),
-                entity.getImmatriculation(),
-                entity.getOrdre(),
-                entity.getMarque(),
-                entity.getModele(),
-                entity.getProductUuid(),
-                // Nested insured information
-                entity.getInsured() != null ? insuredMapper.toResponse(entity.getInsured()) : null,
-                // Driver entries list
-                entity.getDriverEntries() != null ?
-                        entity.getDriverEntries().stream()
-                                .map(riskDriverEntryMapper::toResponse)
+                entity.getInsuredFirstName(),
+                entity.getInsuredLastName(),
+                entity.getInsuredAddress(),
+                entity.getInsuredPhone(),
+                entity.getAttributes() != null ?
+                        entity.getAttributes().stream()
+                                .map(valeurCaracteristiqueRiskMapper::toResponse)
                                 .collect(Collectors.toList()) : Collections.emptyList(),
                 entity.getDriverName(),
                 entity.getDriverGender(),
@@ -185,7 +137,72 @@ public class RiskMapper {
                 entity.getMaxSpeed(),
                 entity.getNewValue(),
                 entity.getMarketValue(),
-                // Primes garanties list
+                entity.getCreatedAt(),
+                entity.getUpdatedAt()
+        );
+    }
+
+    /**
+     * Converts Risk entity to RiskViewResponse with nested relationships
+     */
+    public RiskViewResponse toViewResponse(Risk entity) {
+        if (entity == null) {
+            return null;
+        }
+
+        return new RiskViewResponse(
+                entity.getId(),
+                entity.getUuid(),
+                entity.getIsFleetMember(),
+                entity.getParentFleetPoliceUuid(),
+                entity.getNumAvenant(),
+                entity.getImmatriculation(),
+                entity.getOrdre(),
+                entity.getMarque(),
+                entity.getModele(),
+                entity.getProductUuid(),
+                entity.getInsuredFirstName(),
+                entity.getInsuredLastName(),
+                entity.getInsuredAddress(),
+                entity.getInsuredPhone(),
+                entity.getAttributes() != null ?
+                        entity.getAttributes().stream()
+                                .map(valeurCaracteristiqueRiskMapper::toResponse)
+                                .collect(Collectors.toList()) : Collections.emptyList(),
+                entity.getDriverEntries() != null ?
+                        entity.getDriverEntries().stream()
+                                .map(riskDriverEntryMapper::toResponse)
+                                .toList() : Collections.emptyList(),
+                entity.getDriverName(),
+                entity.getDriverGender(),
+                entity.getDriverBirthDate(),
+                entity.getLicenseType(),
+                entity.getLicenseNumber(),
+                entity.getLicenseIssueDate(),
+                entity.getLicenseIssuePlace(),
+                entity.getCreditDelegation(),
+                entity.getZone(),
+                entity.getVehicleTypeUuid(),
+                entity.getGenreUuid(),
+                entity.getUsageUuid(),
+                entity.getFirstRegistrationDate(),
+                entity.getEnergie(),
+                entity.getChassisNumber(),
+                entity.getEngineNumber(),
+                entity.getBodyType(),
+                entity.getHasTurbo(),
+                entity.getHasTrailer(),
+                entity.getIsFlammable(),
+                entity.getPower(),
+                entity.getTonnage(),
+                entity.getCylinder(),
+                entity.getSeatCount(),
+                entity.getAttestationNumberUuid(),
+                entity.getFormulaPTUuid(),
+                entity.getNbPersonsTransported(),
+                entity.getMaxSpeed(),
+                entity.getNewValue(),
+                entity.getMarketValue(),
                 entity.getPrimesGaranties() != null ?
                         entity.getPrimesGaranties().stream()
                                 .map(primeGarantieMapper::toResponse)
@@ -227,6 +244,18 @@ public class RiskMapper {
         }
         if (request.productUuid() != null) {
             entity.setProductUuid(request.productUuid());
+        }
+        if (request.insuredFirstName() != null) {
+            entity.setInsuredFirstName(request.insuredFirstName());
+        }
+        if (request.insuredLastName() != null) {
+            entity.setInsuredLastName(request.insuredLastName());
+        }
+        if (request.insuredAddress() != null) {
+            entity.setInsuredAddress(request.insuredAddress());
+        }
+        if (request.insuredPhone() != null) {
+            entity.setInsuredPhone(request.insuredPhone());
         }
         if (request.driverName() != null) {
             entity.setDriverName(request.driverName());

@@ -26,8 +26,7 @@ import java.util.UUID;
                 @Index(name = "idx_insured_email", columnList = "email")
         }
 )
-//@SQLDelete(sql = "UPDATE insured SET deleted = true, deleted_at = now() WHERE id = ?")
-//@Where(clause = "deleted = false")
+
 public class Insured {
 
     @Id
@@ -75,9 +74,6 @@ public class Insured {
     private String businessLicense;
     @Column(name = "trade_register")
     private String tradeRegister;
-
-    @OneToMany(mappedBy = "insured", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Risk> risks;
 
     @Column(name = "created_at", nullable = false)
     private Instant createdAt;

@@ -18,6 +18,5 @@ public interface RiskService {
     void delete(UUID uuid);
     RiskViewResponse getView(UUID uuid);
     List<RiskResponse> findByUuids(List<UUID> uuids);
-    List<RiskResponse> findByInsuredUuid(UUID insuredUuid);
 }
 

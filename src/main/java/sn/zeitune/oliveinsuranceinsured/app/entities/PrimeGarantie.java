@@ -33,10 +33,10 @@ public class PrimeGarantie {
     @Column(name = "pos_uuid", nullable = false)
     private UUID poSaleUuid;
 
-    @Column(name = "police_uuid", nullable = false)
+    @Column(name = "police_uuid", nullable = true)
     private UUID policeUuid;
 
-    @Column(name = "risk_uuid", nullable = false)
+    @Column(name = "risk_uuid", nullable = true)
     private UUID riskUuid;
 
     @Column(name = "num_avenant")

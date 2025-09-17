@@ -10,10 +10,8 @@ public record PrimeGarantieCreateRequest(
         @NotNull(message = "PO Sale UUID is required")
         UUID poSaleUuid,
 
-        @NotNull(message = "Police UUID is required")
         UUID policeUuid,
 
-        @NotNull(message = "Risk UUID is required")
         UUID riskUuid,
 
         @Size(max = 50, message = "Num avenant must not exceed 50 characters")

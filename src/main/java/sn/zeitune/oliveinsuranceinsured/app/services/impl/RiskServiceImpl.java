@@ -43,10 +43,10 @@ public class RiskServiceImpl implements RiskService {
         Risk entity = riskMapper.toEntity(request);
 
         if (request.marque() != null) {
-            entity.setMarque(resolveBrandLabel(request.marque()));
+            entity.setMarque(request.marque());
         }
         if (request.modele() != null) {
-            entity.setModele(resolveModelLabel(entity.getMarque(), request.modele()));
+            entity.setModele(request.modele());
         }
 
         entity = repository.save(entity);
@@ -86,10 +86,10 @@ public class RiskServiceImpl implements RiskService {
         riskMapper.updateEntity(entity, request);
 
         if (request.marque() != null) {
-            entity.setMarque(resolveBrandLabel(request.marque()));
+            entity.setMarque(request.marque());
         }
         if (request.modele() != null) {
-            entity.setModele(resolveModelLabel(entity.getMarque(), request.modele()));
+            entity.setModele(request.modele());
         }
 
         if (request.attributes() != null) {

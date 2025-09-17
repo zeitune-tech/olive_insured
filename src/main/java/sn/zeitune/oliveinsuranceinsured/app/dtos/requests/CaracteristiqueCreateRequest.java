@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,6 +28,20 @@ public record CaracteristiqueCreateRequest(
         List<UUID> warrantiesUuids,
 
         @NotBlank(message = "Type caracteristique is required")
-        String typeCaracteristique
+        String typeCaracteristique,
+
+        // Propriétés spécifiques CaracteristiqueNumerique
+        BigDecimal valeurMin,
+        BigDecimal valeurMax,
+        Integer nombreDecimales,
+
+        // Propriétés spécifiques CaracteristiqueTexte
+        Integer longueurMin,
+        Integer longueurMax,
+        String regexValidation,
+
+        // Propriétés spécifiques CaracteristiqueListe
+        Boolean selectionMultiple,
+        List<OptionCaracteristiqueRequest> options
 ) {
 }

@@ -1,5 +1,6 @@
 package sn.zeitune.oliveinsuranceinsured.app.dtos.responses;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -13,6 +14,20 @@ public record CaracteristiqueResponse(
         UUID companyUuid,
         List<UUID> warrantiesUuids,
         String typeCaracteristique,
-        String typeAttente
+        String typeAttente,
+
+        // Propriétés spécifiques CaracteristiqueNumerique
+        BigDecimal valeurMin,
+        BigDecimal valeurMax,
+        Integer nombreDecimales,
+
+        // Propriétés spécifiques CaracteristiqueTexte
+        Integer longueurMin,
+        Integer longueurMax,
+        String regexValidation,
+
+        // Propriétés spécifiques CaracteristiqueListe
+        Boolean selectionMultiple,
+        List<OptionCaracteristiqueResponse> options
 ) {
 }

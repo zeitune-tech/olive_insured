@@ -3,6 +3,7 @@ package sn.zeitune.oliveinsuranceinsured.app.dtos.requests;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
 
@@ -22,6 +23,20 @@ public record CaracteristiqueUpdateRequest(
 
         UUID companyUuid,
 
-        List<UUID> warrantiesUuids
+        List<UUID> warrantiesUuids,
+
+        // Propriétés spécifiques CaracteristiqueNumerique
+        BigDecimal valeurMin,
+        BigDecimal valeurMax,
+        Integer nombreDecimales,
+
+        // Propriétés spécifiques CaracteristiqueTexte
+        Integer longueurMin,
+        Integer longueurMax,
+        String regexValidation,
+
+        // Propriétés spécifiques CaracteristiqueListe
+        Boolean selectionMultiple,
+        List<OptionCaracteristiqueRequest> options
 ) {
 }

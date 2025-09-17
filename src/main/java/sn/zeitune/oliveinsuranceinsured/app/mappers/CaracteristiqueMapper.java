@@ -4,12 +4,11 @@ import org.springframework.stereotype.Component;
 import sn.zeitune.oliveinsuranceinsured.app.dtos.requests.CaracteristiqueCreateRequest;
 import sn.zeitune.oliveinsuranceinsured.app.dtos.requests.CaracteristiqueUpdateRequest;
 import sn.zeitune.oliveinsuranceinsured.app.dtos.responses.CaracteristiqueResponse;
-import sn.zeitune.oliveinsuranceinsured.app.entities.attributes.Caracteristique;
-import sn.zeitune.oliveinsuranceinsured.app.entities.attributes.CaracteristiqueListe;
-import sn.zeitune.oliveinsuranceinsured.app.entities.attributes.CaracteristiqueNumerique;
-import sn.zeitune.oliveinsuranceinsured.app.entities.attributes.CaracteristiqueTexte;
+import sn.zeitune.oliveinsuranceinsured.app.dtos.responses.OptionCaracteristiqueResponse;
+import sn.zeitune.oliveinsuranceinsured.app.entities.attributes.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class CaracteristiqueMapper {
@@ -27,9 +26,39 @@ public class CaracteristiqueMapper {
         String normalized = type.trim().toUpperCase();
 
         Caracteristique entity = switch (normalized) {
-            case "TEXTE", "TEXT" -> new CaracteristiqueTexte();
-            case "NUMERIQUE", "NUMBER" -> new CaracteristiqueNumerique();
-            case "LISTE", "SELECT", "MULTI_SELECT" -> new CaracteristiqueListe();
+            case "TEXTE", "TEXT" -> {
+                CaracteristiqueTexte texte = new CaracteristiqueTexte();
+                texte.setLongueurMin(request.longueurMin());
+                texte.setLongueurMax(request.longueurMax());
+                texte.setRegexValidation(request.regexValidation());
+                yield texte;
+            }
+            case "NUMERIQUE", "NUMBER" -> {
+                CaracteristiqueNumerique numerique = new CaracteristiqueNumerique();
+                numerique.setValeurMin(request.valeurMin());
+                numerique.setValeurMax(request.valeurMax());
+                numerique.setNombreDecimales(request.nombreDecimales());
+                yield numerique;
+            }
+            case "LISTE", "SELECT", "MULTI_SELECT" -> {
+                CaracteristiqueListe liste = new CaracteristiqueListe();
+                liste.setSelectionMultiple(request.selectionMultiple());
+                if (request.options() != null) {
+                    List<OptionCaracteristique> options = request.options().stream()
+                        .map(optReq -> {
+                            OptionCaracteristique opt = new OptionCaracteristique();
+                            opt.setValeur(optReq.valeur());
+                            opt.setLibelle(optReq.libelle());
+                            opt.setOrdre(optReq.ordre());
+                            opt.setActif(true);
+                            opt.setCaracteristique(liste);
+                            return opt;
+                        })
+                        .toList();
+                    liste.setOptions(new ArrayList<>(options));
+                }
+                yield liste;
+            }
             default ->
                     throw new IllegalArgumentException("Type de caractéristique inconnu: " + request.typeCaracteristique());
         };
@@ -64,6 +93,26 @@ public class CaracteristiqueMapper {
             return null;
         }
 
+        // Propriétés spécifiques selon le type
+        var valeurMin = entity instanceof CaracteristiqueNumerique num ? num.getValeurMin() : null;
+        var valeurMax = entity instanceof CaracteristiqueNumerique num ? num.getValeurMax() : null;
+        var nombreDecimales = entity instanceof CaracteristiqueNumerique num ? num.getNombreDecimales() : null;
+
+        var longueurMin = entity instanceof CaracteristiqueTexte txt ? txt.getLongueurMin() : null;
+        var longueurMax = entity instanceof CaracteristiqueTexte txt ? txt.getLongueurMax() : null;
+        var regexValidation = entity instanceof CaracteristiqueTexte txt ? txt.getRegexValidation() : null;
+
+        var selectionMultiple = entity instanceof CaracteristiqueListe liste ? liste.getSelectionMultiple() : null;
+        var options = entity instanceof CaracteristiqueListe liste ?
+            liste.getOptions().stream()
+                .map(opt -> new OptionCaracteristiqueResponse(
+                    opt.getValeur(),
+                    opt.getLibelle(),
+                    opt.getOrdre(),
+                    opt.getActif()
+                ))
+                .toList() : null;
+
         return new CaracteristiqueResponse(
                 entity.getUuid(),
                 entity.getNom(),
@@ -74,7 +123,15 @@ public class CaracteristiqueMapper {
                 entity.getCompanyUuid(),
                 entity.getWarrantiesUuids(),
                 getDiscriminatorValue(entity),
-                entity.getTypeAttente()
+                entity.getTypeAttente(),
+                valeurMin,
+                valeurMax,
+                nombreDecimales,
+                longueurMin,
+                longueurMax,
+                regexValidation,
+                selectionMultiple,
+                options
         );
     }
 
@@ -88,6 +145,7 @@ public class CaracteristiqueMapper {
             return;
         }
 
+        // Update common fields
         if (request.nom() != null) {
             entity.setNom(request.nom());
         }
@@ -108,6 +166,53 @@ public class CaracteristiqueMapper {
         }
         if (request.warrantiesUuids() != null) {
             entity.setWarrantiesUuids(new ArrayList<>(request.warrantiesUuids()));
+        }
+
+        // Update specific fields based on entity type
+        if (entity instanceof CaracteristiqueNumerique numerique) {
+            if (request.valeurMin() != null) {
+                numerique.setValeurMin(request.valeurMin());
+            }
+            if (request.valeurMax() != null) {
+                numerique.setValeurMax(request.valeurMax());
+            }
+            if (request.nombreDecimales() != null) {
+                numerique.setNombreDecimales(request.nombreDecimales());
+            }
+        }
+
+        if (entity instanceof CaracteristiqueTexte texte) {
+            if (request.longueurMin() != null) {
+                texte.setLongueurMin(request.longueurMin());
+            }
+            if (request.longueurMax() != null) {
+                texte.setLongueurMax(request.longueurMax());
+            }
+            if (request.regexValidation() != null) {
+                texte.setRegexValidation(request.regexValidation());
+            }
+        }
+
+        if (entity instanceof CaracteristiqueListe liste) {
+            if (request.selectionMultiple() != null) {
+                liste.setSelectionMultiple(request.selectionMultiple());
+            }
+            if (request.options() != null) {
+                // Clear existing options and set new ones
+                liste.getOptions().clear();
+                List<OptionCaracteristique> newOptions = request.options().stream()
+                    .map(optReq -> {
+                        OptionCaracteristique opt = new OptionCaracteristique();
+                        opt.setValeur(optReq.valeur());
+                        opt.setLibelle(optReq.libelle());
+                        opt.setOrdre(optReq.ordre());
+                        opt.setActif(true);
+                        opt.setCaracteristique(liste);
+                        return opt;
+                    })
+                    .toList();
+                liste.getOptions().addAll(newOptions);
+            }
         }
     }
 

@@ -1,0 +1,86 @@
+name: DEV | Build and Deploy Spring Boot App
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: oracle-actions/setup-java@v1
+        with:
+          website: oracle.com
+          release: 21
+          version: 21.0.4
+
+      - name: Build application (skip tests)
+        run: mvn clean package -DskipTests
+
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app_artifact
+          path: target/*.jar
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/dev' }}
+
+    steps:
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app_artifact
+
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Upload JAR to server
+        run: |
+          scp -P ${{ secrets.SERVER_PORT }} *.jar ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }}:/var/www/olive_services/olive_insured_service/
+
+      - name: Run deploy script on server
+        run: |
+          ssh -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
+            ~/bin/deploy-service.sh exploitation-service /var/www/olive_services/olive_insured_service
+          "
+
+  restart:
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/dev' }}
+
+    steps:
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.3
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add server to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Restart service
+        run: >
+          ssh -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{
+          secrets.SERVER_HOST }} "
+            sudo systemctl restart dev.docker.management.service &&
+            sleep 10 &&
+            sudo systemctl status dev.docker.management.service --no-pager --lines=0
+          "

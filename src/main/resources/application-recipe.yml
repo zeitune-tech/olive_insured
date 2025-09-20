@@ -1,5 +1,5 @@
 server:
-  port: 8150
+  port: 8250
   servlet:
     context-path: /api/v1/
 
@@ -17,29 +17,20 @@ services:
 
 spring:
   application:
-    name: dev_olive_insurance_insured_service
+    name: recipe-olive-insurance-insured-service
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
     hibernate:
-      ddl-auto: create
-    show-sql: true
+      ddl-auto: update
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
-        use_sql_comments: true
-    generate-ddl: true
     database-platform: org.hibernate.dialect.PostgreSQLDialect
-
-  # Configuration spécifique au développement
-  devtools:
-    restart:
-      enabled: true
-    livereload:
-      enabled: true
 
   cloud:
     consul:
@@ -69,14 +60,12 @@ management:
       exposure:
         include: health,info
 
-# Logs plus détaillés en développement
 logging:
   level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
-    org.springframework.security: DEBUG
-    org.springframework.orm.jpa: DEBUG
-    sn.zeitune.oliveinsuranceinsured: DEBUG
+    org.hibernate.SQL: INFO
+    org.hibernate.type.descriptor.sql.BasicBinder: INFO
+    org.springframework.security: INFO
+    sn.zeitune: INFO
 
 jwt:
   user:

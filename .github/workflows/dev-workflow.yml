@@ -57,7 +57,7 @@ jobs:
       - name: Run deploy script on server
         run: |
           ssh -p ${{ secrets.SERVER_PORT }} ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_HOST }} "
-            ~/bin/deploy-service.sh exploitation-service /var/www/olive_services/olive_insured_service
+            ~/bin/deploy-service.sh insured-service /var/www/olive_services/olive_insured_service
           "
 
   restart:

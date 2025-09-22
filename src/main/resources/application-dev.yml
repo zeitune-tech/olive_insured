@@ -80,13 +80,13 @@ logging:
 
 jwt:
   user:
-    public-key: classpath:keys/jwt/public-user.pem
+    public-key: classpath:keys/public-user.pem
     expiration: 900000 # 15 min
 
   admin:
-    public-key: classpath:keys/jwt/public-admin.pem
+    public-key: classpath:keys/public-admin.pem
     expiration: 300000 # 5 min
 
-trusted-services:
-  auth-service: classpath:keys/services/auth-public.pem
-  administration-service: classpath:keys/services/administration-public.pem
+#trusted-services:
+#  auth-service: classpath:keys/services/auth-public.pem
+#  administration-service: classpath:keys/services/administration-public.pem
